@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WARHAMMER VAULT — Магазин фигурок и варгейма</title>
+  <!-- Google Fonts: Cinzel for Gothic Headers, Inter for clean UI, JetBrains Mono for stats -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void: '#0B0C0E',
+            panel: '#14171C',
+            elevated: '#1D222A',
+            borderDark: '#2C323D',
+            gold: {
+              DEFAULT: '#C5A059',
+              dark: '#8C6D37',
+              light: '#E5C88A',
+              glow: 'rgba(197, 160, 89, 0.25)'
+            },
+            crimson: {
+              DEFAULT: '#8B1E1E',
+              bright: '#B91C1C'
+            },
+            plasma: '#38BDF8',
+            parchment: '#E2DACB'
+          },
+          fontFamily: {
+            gothic: ['Cinzel', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          boxShadow: {
+            'gold-glow': '0 0 15px rgba(197, 160, 89, 0.2)',
+            'gold-lg': '0 0 25px rgba(197, 160, 89, 0.35)',
+            'crimson-glow': '0 0 15px rgba(139, 30, 30, 0.3)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbars and gothic decorations */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0B0C0E; }
+    ::-webkit-scrollbar-thumb { background: #8C6D37; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
+    .gold-gradient-border {
+      border: 1px solid #8C6D37;
+      transition: all 0.2s ease-in-out;
+    }
+    .gold-gradient-border:hover {
+      border-color: #C5A059;
+      box-shadow: 0 0 15px rgba(197, 160, 89, 0.18);
+    }
+  </style>
+</head>
+<body class="bg-void text-parchment font-sans min-h-screen flex flex-col antialiased selection:bg-gold-dark selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 bg-panel/95 backdrop-blur-md border-b border-gold-dark/40 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
+      
+      <!-- LOGO & BRAND -->
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="resetFilters()">
+        <div class="w-10 h-10 rounded-full border border-gold flex items-center justify-center bg-elevated shadow-gold-glow group-hover:scale-105 transition-transform">
+          <!-- Imperial Aquila / Skull SVG -->
+          <svg class="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L14.5 7.5L20 8.5L16 12.5L17 18L12 15L7 18L8 12.5L4 8.5L9.5 7.5L12 2Z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-gothic font-black text-xl tracking-widest text-gold block group-hover:text-gold-light transition-colors">WARHAMMER VAULT</span>
+          <span class="text-[10px] tracking-widest uppercase text-muted text-gray-400 font-mono block -mt-1">Оружейная Империума</span>
+        </div>
+      </div>
+
+      <!-- SEARCH BAR -->
+      <div class="flex-1 max-w-xl relative hidden md:block">
+        <input 
+          id="searchInput"
+          type="text" 
+          placeholder="Поиск миниатюр, отрядов, героев (Space Marine, Necron, краски)..."
+          oninput="handleSearch(this.value)"
+          class="w-full bg-void border border-gold-dark/50 rounded-lg px-4 py-2.5 pl-11 text-sm text-parchment placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition"
+        >
+        <svg class="w-5 h-5 text-gold-dark absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+
+      <!-- NAVIGATION & CART TRIGGER -->
+      <div class="flex items-center gap-5">
+        <nav class="hidden lg:flex items-center gap-6 font-gothic text-xs tracking-wider text-gray-300">
+          <button onclick="filterByUniverse('all')" class="hover:text-gold transition">КАТАЛОГ</button>
+          <button onclick="filterByUniverse('wh40k')" class="hover:text-gold transition">WH 40,000</button>
+          <button onclick="filterByUniverse('aos')" class="hover:text-gold transition">AGE OF SIGMAR</button>
+          <button onclick="filterByCategory('paints')" class="hover:text-gold transition">КРАСКИ CITADEL</button>
+        </nav>
+
+        <!-- CART BUTTON -->
+        <button 
+          onclick="toggleCartDrawer(true)"
+          class="relative bg-crimson hover:bg-crimson-bright border border-gold/40 px-4 py-2 rounded-lg flex items-center gap-3 text-white font-gothic tracking-wider shadow-crimson-glow transition transform active:scale-95"
+        >
+          <svg class="w-5 h-5 text-gold-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="text-sm font-semibold">Корзина:</span>
+          <span id="cartCountBadge" class="bg-gold text-void font-bold font-mono px-2 py-0.5 rounded-full text-xs">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO ANNOUNCEMENT BANNER -->
+  <div class="bg-gradient-to-r from-void via-panel to-void border-b border-gold-dark/30 py-3 text-center px-4">
+    <p class="font-gothic text-xs sm:text-sm tracking-wider text-gold-light">
+      ⚔️ <span class="text-gold font-bold">БОЕВОЙ ПРИКАЗ:</span> Скидка 15% на стартовые наборы и комплекты миниатюр по промокоду <span class="bg-crimson/80 px-2 py-0.5 rounded text-white font-mono text-xs font-bold border border-gold/40">IMPERIUM2026</span>
+    </p>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 flex flex-col md:flex-row gap-8">
+    
+    <!-- LEFT SIDEBAR: FILTERS -->
+    <aside class="w-full md:w-72 flex-shrink-0 space-y-6">
+      
+      <!-- FILTER PANEL CONTAINER -->
+      <div class="bg-panel border border-gold-dark/40 rounded-xl p-5 shadow-lg space-y-6 sticky top-28">
+        
+        <div class="flex items-center justify-between border-b border-borderDark pb-3">
+          <h2 class="font-gothic font-bold text-sm tracking-widest text-gold uppercase flex items-center gap-2">
+            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            ФИЛЬТРЫ ОРУЖЕЙНОЙ
+          </h2>
+          <button onclick="resetFilters()" class="text-xs text-gray-400 hover:text-gold transition">Сброс</button>
+        </div>
+
+        <!-- FACTIONS FILTER -->
+        <div>
+          <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Альянсы и Фракции</h3>
+          <div class="space-y-2 text-sm">
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="imperium" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
+              <span>Империум Человечества</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="chaos" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
+              <span>Силы Хаоса (Chaos)</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="xenos" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
+              <span>Ксеносы (Некроны, Орки)</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="aos" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
+              <span>Age of Sigmar</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- MATERIAL FILTER -->
+        <div class="border-t border-borderDark pt-4">
+          <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Материал фигурок</h3>
+          <div class="space-y-2 text-sm">
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="plastic" onchange="applyFilters()" class="material-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
+              <span>Citadel Plastic (Пластик)</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="resin" onchange="applyFilters()" class="material-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
+              <span>Смола / Finecast</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
+              <input type="checkbox" value="paint" onchange="applyFilters()" class="material-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
+              <span>Модельная химия и краски</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- SCALE FILTER -->
+        <div class="border-t border-borderDark pt-4">
+          <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Масштаб миниатюры</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+            <button onclick="setScaleFilter('28mm')" class="scale-btn py-1.5 px-3 bg-void border border-gold-dark/40 rounded hover:border-gold text-center transition">28 мм</button>
+            <button onclick="setScaleFilter('32mm')" class="scale-btn py-1.5 px-3 bg-void border border-gold-dark/40 rounded hover:border-gold text-center transition">32 мм</button>
+            <button onclick="setScaleFilter('40mm')" class="scale-btn py-1.5 px-3 bg-void border border-gold-dark/40 rounded hover:border-gold text-center transition">40 мм / HQ</button>
+            <button onclick="setScaleFilter('all')" class="scale-btn py-1.5 px-3 bg-void border border-gold rounded text-gold text-center transition">Все</button>
+          </div>
+        </div>
+
+        <!-- PRICE RANGE SLIDER -->
+        <div class="border-t border-borderDark pt-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider">Цена (до)</h3>
+            <span id="priceValue" class="font-mono text-sm text-gold font-bold">15 000 ₽</span>
+          </div>
+          <input 
+            type="range" 
+            id="priceSlider" 
+            min="1000" 
+            max="15000" 
+            step="500" 
+            value="15000" 
+            oninput="handlePriceSlider(this.value)"
+            class="w-full accent-gold bg-void h-1.5 rounded cursor-pointer"
+          >
+        </div>
+
+        <!-- AVAILABILITY -->
+        <div class="border-t border-borderDark pt-4">
+          <label class="flex items-center justify-between cursor-pointer">
+            <span class="text-sm">Только в наличии</span>
+            <input type="checkbox" id="stockOnly" onchange="applyFilters()" class="rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
+          </label>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- RIGHT: PRODUCT CATALOG GRID -->
+    <section class="flex-1 space-y-6">
+      
+      <!-- CONTROLS & STATS BAR -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel/60 border border-gold-dark/30 rounded-lg p-4">
+        <div class="text-sm">
+          Показано миниатюр: <span id="displayedCount" class="font-mono text-gold font-bold">0</span> из <span id="totalCount" class="font-mono text-gray-400">0</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="text-gray-400">Сортировка:</span>
+          <select id="sortSelect" onchange="applyFilters()" class="bg-void border border-gold-dark/50 text-parchment rounded px-3 py-1 text-sm focus:outline-none focus:border-gold">
+            <option value="default">По популярности</option>
+            <option value="price-asc">По возрастанию цены</option>
+            <option value="price-desc">По убыванию цены</option>
+            <option value="points">По очкам (Pts)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PRODUCTS GRID -->
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic product cards will be injected by JavaScript -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div id="productModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-panel border-2 border-gold rounded-2xl max-w-4xl w-full overflow-hidden shadow-gold-lg relative animate-fade-in flex flex-col md:flex-row">
+      
+      <!-- CLOSE BUTTON -->
+      <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-void border border-gold/60 text-gold hover:bg-gold hover:text-void flex items-center justify-center transition">
+        ✕
+      </button>
+
+      <!-- MODAL IMAGE & GALLERY -->
+      <div class="md:w-1/2 p-6 bg-void/70 flex flex-col justify-between border-b md:border-b-0 md:border-r border-borderDark">
+        <div class="flex-1 flex items-center justify-center py-4">
+          <img id="modalMainImg" src="" alt="Миниатюра" class="max-h-72 object-contain rounded-lg filter drop-shadow-2xl">
+        </div>
+        <!-- MINI THUMBNAILS -->
+        <div class="flex items-center justify-center gap-2 pt-4">
+          <div class="w-14 h-14 rounded border-2 border-gold p-1 bg-void cursor-pointer">
+            <img id="modalThumb1" src="" class="w-full h-full object-contain">
+          </div>
+          <div class="w-14 h-14 rounded border border-gold-dark/40 p-1 bg-void cursor-pointer hover:border-gold transition">
+            <img id="modalThumb2" src="" class="w-full h-full object-contain opacity-70 hover:opacity-100">
+          </div>
+          <div class="w-14 h-14 rounded border border-gold-dark/40 p-1 bg-void cursor-pointer hover:border-gold transition">
+            <img id="modalThumb3" src="" class="w-full h-full object-contain opacity-70 hover:opacity-100">
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL CONTENT & SPECS -->
+      <div class="md:w-1/2 p-6 flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span id="modalFactionBadge" class="text-[11px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded bg-elevated border border-gold-dark text-gold font-bold">ADEPTUS ASTARTES</span>
+            <span id="modalUniverseTag" class="text-[10px] uppercase tracking-wider text-gray-400">WH 40,000</span>
+          </div>
+          <h2 id="modalTitle" class="font-gothic text-2xl font-bold text-gold-light tracking-wide">Adeptus Astartes Primaris Captain</h2>
+          <p id="modalSubtitle" class="text-xs text-gray-400 font-mono mt-1">Одиночный командирский юнит (HQ)</p>
+          
+          <!-- SPECS TABLE -->
+          <div class="grid grid-cols-3 gap-2 bg-void p-3 rounded-lg border border-borderDark my-4 text-center">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase">Масштаб</span>
+              <span id="modalScale" class="font-mono text-xs text-parchment font-bold">32 мм</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase">Очки (Pts)</span>
+              <span id="modalPoints" class="font-mono text-xs text-gold font-bold">85 pts</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase">Материал</span>
+              <span id="modalMaterial" class="font-mono text-xs text-parchment font-bold">Пластик Citadel</span>
+            </div>
+          </div>
+
+          <!-- WARGEAR SELECTOR -->
+          <div class="space-y-1.5 my-3">
+            <label class="text-xs font-gothic text-gray-300 block uppercase tracking-wider">Кастомизация снаряжения (Wargear)</label>
+            <select id="modalWargear" class="w-full bg-void border border-gold-dark/60 text-parchment rounded-lg p-2.5 text-xs font-sans focus:outline-none focus:border-gold">
+              <option>Power Sword & Relic Shield (+0 pts)</option>
+              <option>Plasma Pistol & Power Fist (+10 pts)</option>
+              <option>Heavy Bolt Rifle & Master-crafted Blade (+5 pts)</option>
+            </select>
+          </div>
+
+          <!-- LORE DESCRIPTION -->
+          <p id="modalLore" class="text-xs text-gray-300 leading-relaxed italic border-l-2 border-gold pl-3 py-1">
+            Закаленный ветеран тысячи кампаний. Ведет в бой космодесантников с несокрушимой решимостью, сокрушая врагов Императора древним силовым клинком.
+          </p>
+        </div>
+
+        <!-- FOOTER & ORDER CTA -->
+        <div class="border-t border-borderDark pt-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">Наличие на складе:</span>
+            <span id="modalStock" class="font-mono text-xs text-green-400 font-bold flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 5 шт. (в резерве)
+            </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center bg-void border border-gold-dark rounded-lg">
+              <button onclick="adjustModalQty(-1)" class="px-3 py-2 text-gold hover:bg-elevated transition">-</button>
+              <span id="modalQty" class="px-3 py-2 font-mono text-sm font-bold">1</span>
+              <button onclick="adjustModalQty(1)" class="px-3 py-2 text-gold hover:bg-elevated transition">+</button>
+            </div>
+            <button 
+              onclick="addModalToCart()"
+              class="flex-1 bg-gradient-to-r from-gold-dark via-gold to-gold-dark text-void font-gothic font-bold py-3 px-4 rounded-lg tracking-wider hover:brightness-110 shadow-gold-glow transition flex items-center justify-center gap-2"
+            >
+              <span>В КОРЗИНУ — </span>
+              <span id="modalPrice" class="font-mono font-bold">3 490 ₽</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div id="cartOverlay" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden transition-opacity" onclick="toggleCartDrawer(false)"></div>
+  <aside id="cartDrawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-panel border-l-2 border-gold z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    
+    <!-- DRAWER HEADER -->
+    <div class="p-5 border-b border-gold-dark/40 flex items-center justify-between bg-void/80">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L14.5 7.5L20 8.5L16 12.5L17 18L12 15L7 18L8 12.5L4 8.5L9.5 7.5L12 2Z"/>
+        </svg>
+        <h2 class="font-gothic font-black text-lg tracking-widest text-gold uppercase">ОРДЕР НА СБОРКУ</h2>
+      </div>
+      <button onclick="toggleCartDrawer(false)" class="text-gray-400 hover:text-gold text-lg p-1 transition">✕</button>
+    </div>
+
+    <!-- CART ITEMS LIST -->
+    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4">
+      <!-- Dynamic cart items injected via JS -->
+    </div>
+
+    <!-- BUNDLE DISCOUNT PURITY SEAL BANNER -->
+    <div class="px-5 py-3 bg-elevated/90 border-t border-b border-borderDark flex items-center gap-3">
+      <!-- Wax seal badge icon -->
+      <div class="w-8 h-8 rounded-full bg-crimson border-2 border-gold flex items-center justify-center text-gold font-gothic font-black text-xs shadow-crimson-glow flex-shrink-0">
+        !
+      </div>
+      <div class="text-xs">
+        <span class="font-gothic font-bold text-gold-light block">Комплектная скидка -15%</span>
+        <span class="text-gray-400">При заказе отряда вместе с красками Citadel</span>
+      </div>
+    </div>
+
+    <!-- PROMOCODE INPUT -->
+    <div class="p-5 bg-void/50 border-b border-borderDark space-y-2">
+      <div class="flex gap-2">
+        <input 
+          id="promoInput" 
+          type="text" 
+          placeholder="Промокод (напр. IMPERIUM2026)" 
+          class="flex-1 bg-void border border-gold-dark/50 rounded-lg px-3 py-2 text-xs font-mono text-parchment focus:outline-none focus:border-gold uppercase"
+        >
+        <button onclick="applyPromoCode()" class="bg-elevated hover:bg-gold hover:text-void border border-gold-dark px-4 py-2 rounded-lg text-xs font-gothic tracking-wider transition">
+          Применить
+        </button>
+      </div>
+      <p id="promoMessage" class="text-[11px] font-mono hidden"></p>
+    </div>
+
+    <!-- TOTALS & CHECKOUT BUTTON -->
+    <div class="p-5 bg-panel border-t border-gold-dark/40 space-y-4">
+      <div class="space-y-1.5 text-xs font-mono">
+        <div class="flex justify-between text-gray-400">
+          <span>Подытог:</span>
+          <span id="cartSubtotal">0 ₽</span>
+        </div>
+        <div class="flex justify-between text-crimson-bright">
+          <span>Скидка по ордеру:</span>
+          <span id="cartDiscount">-0 ₽</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-parchment pt-2 border-t border-borderDark">
+          <span class="font-gothic tracking-wider text-gold">ИТОГО:</span>
+          <span id="cartTotal" class="text-gold-light text-lg">0 ₽</span>
+        </div>
+      </div>
+
+      <button 
+        onclick="proceedToCheckout()"
+        class="w-full bg-gradient-to-r from-gold-dark via-gold to-gold-dark text-void font-gothic font-black text-sm tracking-widest py-3.5 rounded-xl uppercase shadow-gold-glow hover:brightness-110 active:scale-95 transition"
+      >
+        ОФОРМИТЬ ЗАКАЗ
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- FOOTER -->
+  <footer class="bg-void border-t border-gold-dark/30 py-8 text-center text-xs text-gray-500 space-y-2">
+    <p class="font-gothic tracking-wider text-gold-dark">АНО ПОО ММКЦТ «Академия ТОП» • Практика ПМ.02 / ПМ.03 • Соколов Матвей</p>
+    <p>© 2026 Warhammer Vault. Вселенная и товарные знаки принадлежат Games Workshop Ltd.</p>
+  </footer>
+
+  <!-- SCRIPT: APPLICATION STATE & INTERACTION -->
+  <script>
+    // PRODUCT REPOSITORY
+    const products = [
+      {
+        id: 1,
+        title: "Space Marine Primaris Captain",
+        faction: "imperium",
+        factionName: "Adeptus Astartes",
+        universe: "wh40k",
+        material: "plastic",
+        materialName: "Citadel Plastic",
+        scale: "32mm",
+        points: 85,
+        price: 3490,
+        stock: 5,
+        image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
+        lore: "Закаленный ветеран тысяч кампаний. Ведет в бой космодесантников с несокрушимой решимостью, сокрушая врагов Императора силовым мечом."
+      },
+      {
+        id: 2,
+        title: "Necron Overlord with Tachyon Arrow",
+        faction: "xenos",
+        factionName: "Necrons",
+        universe: "wh40k",
+        material: "plastic",
+        materialName: "Citadel Plastic",
+        scale: "32mm",
+        points: 90,
+        price: 4390,
+        stock: 3,
+        image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
+        lore: "Древний бессмертный монарх некронов, пробудившийся после миллионолетнего сна ради возвращения галактической гегемонии."
+      },
+      {
+        id: 3,
+        title: "Chaos Space Marine Havoc Squad",
+        faction: "chaos",
+        factionName: "Heretic Astartes",
+        universe: "wh40k",
+        material: "plastic",
+        materialName: "Citadel Plastic",
+        scale: "32mm",
+        points: 135,
+        price: 3890,
+        stock: 7,
+        image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
+        lore: "Отряд опустошителей темных богов, оснащенный лазпушками и автопушками для сокрушения тяжелой брони противника."
+      },
+      {
+        id: 4,
+        title: "Ork Warboss in Mega Armour",
+        faction: "xenos",
+        factionName: "Orks",
+        universe: "wh40k",
+        material: "plastic",
+        materialName: "Citadel Plastic",
+        scale: "40mm",
+        points: 120,
+        price: 6690,
+        stock: 2,
+        image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
+        lore: "Самый большой, свирепый и бронированный зеленокожий вожак WAAAGH!, облаченный в неповоротливую мега-броню с клешней."
+      },
+      {
+        id: 5,
+        title: "Lord-Celestant on Dracoth",
+        faction: "aos",
+        factionName: "Stormcast Eternals",
+        universe: "aos",
+        material: "plastic",
+        materialName: "Citadel Plastic",
+        scale: "40mm",
+        points: 190,
+        price: 5290,
+        stock: 4,
+        image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
+        lore: "Грозорожденный вечный в сверкающих доспехах Сигмара верхом на огнедышащем дракоте во Владениях Смертных."
+      },
+      {
+        id: 6,
+        title: "Citadel Base Paint Starter Set (12 баночек)",
+        faction: "imperium",
+        factionName: "Citadel Supply",
+        universe: "all",
+        material: "paint",
+        materialName: "Краски и химия",
+        scale: "28mm",
+        points: 0,
+        price: 4990,
+        stock: 12,
+        image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
+        lore: "Базовый набор акриловых красок Citadel с высокой пигментацией и синтетической кистью для росписи миниатюр."
+      }
+    ];
+
+    // APPLICATION STATE
+    let cart = [
+      { productId: 1, qty: 1 },
+      { productId: 6, qty: 1 }
+    ];
+    let activeModalProduct = null;
+    let modalQuantity = 1;
+    let appliedDiscountPercent = 0;
+    let activeScale = "all";
+    let activeUniverse = "all";
+    let activeCategory = "all";
+    let searchQuery = "";
+    let maxPrice = 15000;
+
+    // INITIALIZATION
+    document.addEventListener("DOMContentLoaded", () => {
+      renderProducts();
+      updateCartUI();
+    });
+
+    // RENDER PRODUCT CATALOG
+    function renderProducts() {
+      const grid = document.getElementById("productsGrid");
+      const filtered = getFilteredProducts();
+
+      document.getElementById("displayedCount").innerText = filtered.length;
+      document.getElementById("totalCount").innerText = products.length;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center text-gray-500 font-gothic">
+            <p class="text-lg">По вашему запросу миниатюр в арсенале не найдено.</p>
+            <button onclick="resetFilters()" class="mt-4 text-xs text-gold underline">Сбросить все фильтры</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="bg-panel border border-gold-dark/40 rounded-xl overflow-hidden shadow-lg hover:border-gold hover:shadow-gold-glow transition-all duration-300 flex flex-col group">
+          <!-- CARD IMAGE -->
+          <div class="relative bg-void/80 p-4 h-56 flex items-center justify-center cursor-pointer overflow-hidden" onclick="openProductModal(${p.id})">
+            <span class="absolute top-3 left-3 text-[10px] font-mono px-2 py-0.5 rounded bg-elevated/90 border border-gold-dark/50 text-gold uppercase font-bold">
+              ${p.factionName}
+            </span>
+            <span class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-void/80 text-gray-300 border border-borderDark">
+              ${p.scale}
+            </span>
+            <img src="${p.image}" alt="${p.title}" class="max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
+          </div>
+
+          <!-- CARD BODY -->
+          <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex justify-between items-start gap-2">
+                <h3 onclick="openProductModal(${p.id})" class="font-gothic font-bold text-base text-parchment group-hover:text-gold-light cursor-pointer transition">
+                  ${p.title}
+                </h3>
+              </div>
+              <div class="flex items-center gap-3 text-xs text-gray-400 font-mono mt-2">
+                <span>${p.materialName}</span>
+                ${p.points > 0 ? `<span>•</span><span>${p.points} pts</span>` : ''}
+              </div>
+            </div>
+
+            <!-- CARD FOOTER -->
+            <div class="pt-3 border-t border-borderDark flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-gray-500 block uppercase font-mono">Цена</span>
+                <span class="font-mono text-lg font-bold text-gold-light">${p.price.toLocaleString('ru-RU')} ₽</span>
+              </div>
+              <button 
+                onclick="addToCart(${p.id}, 1)"
+                class="bg-void hover:bg-gold hover:text-void border border-gold text-gold text-xs font-gothic tracking-wider font-bold px-3.5 py-2 rounded-lg transition active:scale-95 shadow-sm"
+              >
+                В корзину
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // FILTER LOGIC
+    function getFilteredProducts() {
+      const selectedFactions = Array.from(document.querySelectorAll('.faction-checkbox:checked')).map(cb => cb.value);
+      const selectedMaterials = Array.from(document.querySelectorAll('.material-checkbox:checked')).map(cb => cb.value);
+      const stockOnly = document.getElementById('stockOnly').checked;
+
+      return products.filter(p => {
+        // Search query
+        if (searchQuery && !p.title.toLowerCase().includes(searchQuery.toLowerCase()) && !p.factionName.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return false;
+        }
+        // Factions
+        if (selectedFactions.length > 0 && !selectedFactions.includes(p.faction)) {
+          return false;
+        }
+        // Materials
+        if (selectedMaterials.length > 0 && !selectedMaterials.includes(p.material)) {
+          return false;
+        }
+        // Universe
+        if (activeUniverse !== 'all' && p.universe !== 'all' && p.universe !== activeUniverse) {
+          return false;
+        }
+        // Scale
+        if (activeScale !== 'all' && p.scale !== activeScale) {
+          return false;
+        }
+        // Price
+        if (p.price > maxPrice) {
+          return false;
+        }
+        // Stock
+        if (stockOnly && p.stock <= 0) {
+          return false;
+        }
+        return true;
+      }).sort((a, b) => {
+        const sort = document.getElementById('sortSelect').value;
+        if (sort === 'price-asc') return a.price - b.price;
+        if (sort === 'price-desc') return b.price - a.price;
+        if (sort === 'points') return b.points - a.points;
+        return 0;
+      });
+    }
+
+    // FILTER HANDLERS
+    function handleSearch(val) {
+      searchQuery = val;
+      renderProducts();
+    }
+    function handlePriceSlider(val) {
+      maxPrice = parseInt(val);
+      document.getElementById("priceValue").innerText = parseInt(val).toLocaleString('ru-RU') + " ₽";
+      renderProducts();
+    }
+    function setScaleFilter(scale) {
+      activeScale = scale;
+      document.querySelectorAll('.scale-btn').forEach(b => {
+        b.classList.remove('border-gold', 'text-gold');
+        b.classList.add('border-gold-dark/40');
+      });
+      event.target.classList.remove('border-gold-dark/40');
+      event.target.classList.add('border-gold', 'text-gold');
+      renderProducts();
+    }
+    function filterByUniverse(universe) {
+      activeUniverse = universe;
+      renderProducts();
+    }
+    function filterByCategory(cat) {
+      if (cat === 'paints') {
+        document.querySelectorAll('.material-checkbox').forEach(cb => {
+          cb.checked = (cb.value === 'paint');
+        });
+      }
+      renderProducts();
+    }
+    function resetFilters() {
+      searchQuery = "";
+      document.getElementById("searchInput").value = "";
+      document.querySelectorAll('.faction-checkbox').forEach(cb => cb.checked = false);
+      document.querySelectorAll('.material-checkbox').forEach(cb => cb.checked = true);
+      document.getElementById('stockOnly').checked = true;
+      document.getElementById('priceSlider').value = 15000;
+      document.getElementById('priceValue').innerText = "15 000 ₽";
+      activeScale = "all";
+      activeUniverse = "all";
+      maxPrice = 15000;
+      renderProducts();
+    }
+    function applyFilters() {
+      renderProducts();
+    }
+
+    // MODAL WINDOW LOGIC
+    function openProductModal(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      activeModalProduct = p;
+      modalQuantity = 1;
+
+      document.getElementById("modalTitle").innerText = p.title;
+      document.getElementById("modalFactionBadge").innerText = p.factionName;
+      document.getElementById("modalUniverseTag").innerText = p.universe === 'wh40k' ? 'WH 40,000' : 'AGE OF SIGMAR';
+      document.getElementById("modalScale").innerText = p.scale;
+      document.getElementById("modalPoints").innerText = p.points > 0 ? p.points + ' pts' : '—';
+      document.getElementById("modalMaterial").innerText = p.materialName;
+      document.getElementById("modalLore").innerText = p.lore;
+      document.getElementById("modalStock").innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> ${p.stock} шт. (в наличии)`;
+      document.getElementById("modalPrice").innerText = p.price.toLocaleString('ru-RU') + " ₽";
+      document.getElementById("modalQty").innerText = "1";
+
+      document.getElementById("modalMainImg").src = p.image;
+      document.getElementById("modalThumb1").src = p.image;
+      document.getElementById("modalThumb2").src = p.image;
+      document.getElementById("modalThumb3").src = p.image;
+
+      document.getElementById("productModal").classList.remove("hidden");
+    }
+    function closeProductModal() {
+      document.getElementById("productModal").classList.add("hidden");
+      activeModalProduct = null;
+    }
+    function adjustModalQty(delta) {
+      modalQuantity = Math.max(1, modalQuantity + delta);
+      document.getElementById("modalQty").innerText = modalQuantity;
+      if (activeModalProduct) {
+        document.getElementById("modalPrice").innerText = (activeModalProduct.price * modalQuantity).toLocaleString('ru-RU') + " ₽";
+      }
+    }
+    function addModalToCart() {
+      if (activeModalProduct) {
+        addToCart(activeModalProduct.id, modalQuantity);
+        closeProductModal();
+        toggleCartDrawer(true);
+      }
+    }
+
+    // CART STATE & DRAWER
+    function addToCart(productId, qty = 1) {
+      const existing = cart.find(item => item.productId === productId);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({ productId, qty });
+      }
+      updateCartUI();
+    }
+    function changeCartQty(productId, delta) {
+      const item = cart.find(x => x.productId === productId);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(x => x.productId !== productId);
+      }
+      updateCartUI();
+    }
+    function removeCartItem(productId) {
+      cart = cart.filter(x => x.productId !== productId);
+      updateCartUI();
+    }
+    function updateCartUI() {
+      const container = document.getElementById("cartItemsContainer");
+      const countBadge = document.getElementById("cartCountBadge");
+      
+      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+      countBadge.innerText = totalQty;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="py-20 text-center text-gray-500 font-gothic">
+            <p>Ваш ордер на сборку пуст.</p>
+            <p class="text-xs text-gray-600 mt-1">Добавьте миниатюры из каталога.</p>
+          </div>
+        `;
+        document.getElementById("cartSubtotal").innerText = "0 ₽";
+        document.getElementById("cartDiscount").innerText = "-0 ₽";
+        document.getElementById("cartTotal").innerText = "0 ₽";
+        return;
+      }
+
+      let subtotal = 0;
+      container.innerHTML = cart.map(item => {
+        const prod = products.find(p => p.id === item.productId);
+        if (!prod) return '';
+        const linePrice = prod.price * item.qty;
+        subtotal += linePrice;
+
+        return `
+          <div class="bg-void/80 border border-borderDark rounded-lg p-3 flex gap-3 items-center">
+            <img src="${prod.image}" alt="${prod.title}" class="w-14 h-14 object-contain rounded bg-panel p-1">
+            <div class="flex-1 min-w-0">
+              <h4 class="font-gothic text-xs font-bold text-parchment truncate">${prod.title}</h4>
+              <span class="text-[10px] text-gray-400 font-mono">${prod.price.toLocaleString('ru-RU')} ₽ / шт.</span>
+              <div class="flex items-center gap-2 mt-2">
+                <button onclick="changeCartQty(${prod.id}, -1)" class="w-6 h-6 rounded bg-elevated border border-gold-dark/40 text-gold flex items-center justify-center text-xs hover:bg-gold hover:text-void">-</button>
+                <span class="font-mono text-xs font-bold px-1">${item.qty}</span>
+                <button onclick="changeCartQty(${prod.id}, 1)" class="w-6 h-6 rounded bg-elevated border border-gold-dark/40 text-gold flex items-center justify-center text-xs hover:bg-gold hover:text-void">+</button>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-mono text-sm font-bold text-gold block">${linePrice.toLocaleString('ru-RU')} ₽</span>
+              <button onclick="removeCartItem(${prod.id})" class="text-[10px] text-crimson-bright hover:underline mt-2">Удалить</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Check bundle discount (if cart has both miniatures and paints)
+      const hasMiniatures = cart.some(i => {
+        const p = products.find(x => x.id === i.productId);
+        return p && p.material !== 'paint';
+      });
+      const hasPaints = cart.some(i => {
+        const p = products.find(x => x.id === i.productId);
+        return p && p.material === 'paint';
+      });
+
+      let discount = 0;
+      if ((hasMiniatures && hasPaints) || appliedDiscountPercent > 0) {
+        const effPercent = Math.max(15, appliedDiscountPercent);
+        discount = Math.round(subtotal * (effPercent / 100));
+      }
+
+      const finalTotal = Math.max(0, subtotal - discount);
+
+      document.getElementById("cartSubtotal").innerText = subtotal.toLocaleString('ru-RU') + " ₽";
+      document.getElementById("cartDiscount").innerText = "-" + discount.toLocaleString('ru-RU') + " ₽";
+      document.getElementById("cartTotal").innerText = finalTotal.toLocaleString('ru-RU') + " ₽";
+    }
+
+    function toggleCartDrawer(open) {
+      const drawer = document.getElementById("cartDrawer");
+      const overlay = document.getElementById("cartOverlay");
+      if (open) {
+        overlay.classList.remove("hidden");
+        drawer.classList.remove("translate-x-full");
+      } else {
+        drawer.classList.add("translate-x-full");
+        overlay.classList.add("hidden");
+      }
+    }
+
+    function applyPromoCode() {
+      const code = document.getElementById("promoInput").value.trim().toUpperCase();
+      const msg = document.getElementById("promoMessage");
+      if (code === "IMPERIUM2026") {
+        appliedDiscountPercent = 15;
+        msg.innerText = "✓ Промокод активирован! Скидка 15% применена.";
+        msg.className = "text-[11px] font-mono text-green-400 block";
+        updateCartUI();
+      } else if (code) {
+        msg.innerText = "✕ Недействительный промокод.";
+        msg.className = "text-[11px] font-mono text-crimson-bright block";
+      }
+    }
+
+    function proceedToCheckout() {
+      alert("Ордер сформирован! Переход к валидации контактных данных и оформлению доставки через Wolverine API.");
+    }
+  </script>
+</body>
+</html>

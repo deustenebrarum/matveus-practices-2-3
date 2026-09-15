@@ -1,0 +1,10 @@
+# Antigravity & AI configuration (contains private API keys)
+.agents/
+
+# Obsidian workspace & settings
+.obsidian/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
