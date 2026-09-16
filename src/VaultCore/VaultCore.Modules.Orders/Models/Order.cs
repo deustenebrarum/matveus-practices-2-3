@@ -21,6 +21,8 @@ public class CustomerInfo
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string ShippingAddress { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string CourierService { get; set; } = string.Empty;
 }
 
 public class OrderItem

@@ -1,12 +1,17 @@
 using System.Net.Http.Json;
 using Alba;
 using Marten;
+using Marten.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Shouldly;
 using VaultCore.Api.Endpoints;
+using VaultCore.Modules.Inventory.Handlers;
 using VaultCore.Modules.Inventory.Models;
 using VaultCore.Modules.Orders.Commands;
 using VaultCore.Modules.Orders.Models;
+using VaultCore.SharedKernel.Contracts;
+using VaultCore.SharedKernel.Exceptions;
 using Xunit;
 
 namespace VaultCore.Tests.Integration;
@@ -129,5 +134,64 @@ public class OrdersAndInventoryIntegrationTests
         var item = response.ReadAsJson<InventoryItem>();
         item.ShouldNotBeNull();
         item.Id.ShouldBe(miniatureId);
+    }
+
+    [Fact]
+    public async Task DeductStock_ConcurrentConflictingUpdates_TriggersOptimisticConcurrencyException()
+    {
+        var miniatureId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+        using var scope = _fixture.Host.Services.CreateScope();
+        var store = scope.ServiceProvider.GetRequiredService<IDocumentStore>();
+
+        await using var session1 = store.LightweightSession();
+        await using var session2 = store.LightweightSession();
+
+        var item1 = await session1.LoadAsync<InventoryItem>(miniatureId);
+        var item2 = await session2.LoadAsync<InventoryItem>(miniatureId);
+
+        item1.ShouldNotBeNull();
+        item2.ShouldNotBeNull();
+
+        item1.AvailableStock -= 1;
+        session1.Store(item1);
+        await session1.SaveChangesAsync();
+
+        item2.AvailableStock -= 1;
+        session2.Store(item2);
+
+        await Should.ThrowAsync<ConcurrencyException>(async () =>
+        {
+            await session2.SaveChangesAsync();
+        });
+    }
+
+    [Fact]
+    public async Task OrderPlacedHandler_InsufficientStock_ThrowsInsufficientStockException()
+    {
+        var miniatureId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+        using var scope = _fixture.Host.Services.CreateScope();
+        var store = scope.ServiceProvider.GetRequiredService<IDocumentStore>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<OrderPlacedHandler>>();
+        var handler = new OrderPlacedHandler(logger);
+
+        await using var session = store.LightweightSession();
+        var currentItem = await session.LoadAsync<InventoryItem>(miniatureId);
+        var excessiveQuantity = (currentItem?.AvailableStock ?? 10) + 999;
+
+        var @event = new OrderPlacedEvent(
+            Guid.NewGuid(),
+            "ORD-TEST-OVERFLOW",
+            "overflow@test.com",
+            [new OrderItemDto(miniatureId, "Roboute Guilliman", excessiveQuantity, 125m)],
+            12500m,
+            DateTimeOffset.UtcNow
+        );
+
+        await Should.ThrowAsync<InsufficientStockException>(async () =>
+        {
+            await handler.Handle(@event, session);
+        });
     }
 }

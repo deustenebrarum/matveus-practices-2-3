@@ -114,4 +114,22 @@ public class DiscountCalculatorTests
         result.PromoDiscount.ShouldBe(0m);
         result.Total.ShouldBe(2000m);
     }
+
+    [Theory]
+    [InlineData("WARHAMMER10")]
+    [InlineData("TERRA10")]
+    [InlineData("WARP-TITHE-10")]
+    public void Calculate_AllRecognizedTenPercentPromoCodes_AppliesTenPercent(string promoCode)
+    {
+        var items = new List<OrderItem>
+        {
+            new() { MiniatureId = Guid.NewGuid(), MiniatureName = "Captain", Faction = "Imperium", UnitPrice = 5000m, Quantity = 1, IsStarterSet = false }
+        };
+
+        var result = DiscountCalculator.Calculate(items, promoCode);
+
+        result.Subtotal.ShouldBe(5000m);
+        result.PromoDiscount.ShouldBe(500m);
+        result.Total.ShouldBe(4500m);
+    }
 }

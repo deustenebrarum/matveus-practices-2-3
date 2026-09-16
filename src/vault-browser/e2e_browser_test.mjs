@@ -1,10 +1,61 @@
 import { chromium } from 'playwright-core';
 import assert from 'node:assert';
+import { spawn } from 'node:child_process';
 
 const BROWSER_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const APP_URL = 'http://localhost:5173';
+const BACKEND_URL = 'http://localhost:5121/healthz';
+
+async function isUrlReachable(url) {
+  try {
+    const res = await fetch(url);
+    return res.status >= 200 && res.status < 500;
+  } catch {
+    return false;
+  }
+}
 
 async function runE2ETests() {
+  let backendProcess = null;
+  let viteProcess = null;
+
+  if (!(await isUrlReachable(BACKEND_URL))) {
+    console.log('⚡ Backend server not detected on :5121, auto-spawning VaultCore.Api...');
+    backendProcess = spawn('dotnet', ['run', '--project', '../VaultCore/VaultCore.Api'], {
+      cwd: process.cwd(),
+      shell: true,
+      stdio: 'ignore'
+    });
+    for (let i = 0; i < 40; i++) {
+      await new Promise(r => setTimeout(r, 500));
+      if (await isUrlReachable(BACKEND_URL)) {
+        console.log('⚡ VaultCore.Api auto-spawned successfully.');
+        break;
+      }
+    }
+  }
+
+  if (!(await isUrlReachable(APP_URL))) {
+    console.log('⚡ Frontend server not detected on :5173, auto-spawning Vite...');
+    viteProcess = spawn('npm', ['run', 'dev'], {
+      cwd: process.cwd(),
+      shell: true,
+      stdio: 'ignore'
+    });
+    let ready = false;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 500));
+      if (await isUrlReachable(APP_URL)) {
+        ready = true;
+        break;
+      }
+    }
+    if (!ready) {
+      throw new Error(`Failed to start Vite on ${APP_URL} within 15 seconds`);
+    }
+    console.log('⚡ Vite auto-spawned successfully.');
+  }
+
   console.log('🚀 Launching real Chrome browser for end-to-end verification...');
   const browser = await chromium.launch({
     executablePath: BROWSER_PATH,
@@ -180,6 +231,16 @@ async function runE2ETests() {
     console.log('\n🎉 ALL 5 USER JOURNEYS CONFIRMED WITH 100% SUCCESS IN REAL CHROME BROWSER!\n');
   } finally {
     await browser.close();
+    if (viteProcess && viteProcess.pid) {
+      try {
+        spawn('taskkill', ['/pid', String(viteProcess.pid), '/f', '/t'], { stdio: 'ignore' });
+      } catch {}
+    }
+    if (backendProcess && backendProcess.pid) {
+      try {
+        spawn('taskkill', ['/pid', String(backendProcess.pid), '/f', '/t'], { stdio: 'ignore' });
+      } catch {}
+    }
   }
 }
 

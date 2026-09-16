@@ -20,7 +20,7 @@ public class Order
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
-public record CustomerInfo(string FullName, string Email, string Phone, string ShippingAddress);
+public record CustomerInfo(string FullName, string Email, string Phone, string ShippingAddress, string City, string CourierService);
 
 public record OrderItem(Guid MiniatureId, string MiniatureName, string Faction, int Quantity, decimal UnitPrice, decimal TotalPrice);
 
@@ -38,7 +38,7 @@ public enum OrderStatus
 1. **Бандл-скидка (Bundle Discount):**
    - 10% от базовой стоимости, если заказ содержит хотя бы 1 стартовый набор (`StarterSet`) ИЛИ суммарно от 3 миниатюр одной фракции.
 2. **Промокоды:**
-   - `WARHAMMER10` — скидка 10% на оставшуюся сумму.
+   - `WARHAMMER10` / `TERRA10` / `WARP-TITHE-10` — скидка 10% на оставшуюся сумму.
    - `EMPEROR20` — скидка 20% на оставшуюся сумму.
 3. **Логика применения:** `Total = Subtotal - BundleDiscount - PromoDiscount`. Округление до 2 знаков. Сумма не может быть меньше 0.
 

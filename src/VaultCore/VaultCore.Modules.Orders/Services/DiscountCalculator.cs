@@ -41,7 +41,7 @@ public static class DiscountCalculator
             var code = promoCode.Trim().ToUpperInvariant();
             var rate = code switch
             {
-                "WARHAMMER10" => 0.10m,
+                "WARHAMMER10" or "TERRA10" or "WARP-TITHE-10" => 0.10m,
                 "EMPEROR20" => 0.20m,
                 _ => 0m
             };
