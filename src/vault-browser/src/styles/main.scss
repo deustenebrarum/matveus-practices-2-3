@@ -1,0 +1,35 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'components' as *;
+
+// Global typography and grimdark defaults
+:root {
+  --gold-primary: #{$gold-primary};
+  --gold-glow: #{$gold-glow};
+  --gold-dark: #{$gold-dark};
+  --dark-obsidian: #{$vault-obsidian};
+}
+
+body {
+  background-color: $vault-black;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(35, 29, 17, 0.45) 0%, transparent 65%),
+    radial-gradient(circle at 100% 100%, rgba(20, 15, 10, 0.5) 0%, transparent 50%);
+  color: #dfcaa0;
+  font-family: $font-sans;
+  overflow-x: hidden;
+  @include scrollbar-custom;
+}
+
+// Utility classes matching design/index.html
+.font-cinzel {
+  font-family: $font-cinzel;
+}
+
+.font-cinzel-deco {
+  font-family: $font-cinzel-deco;
+}
+
+.font-gothic {
+  font-family: $font-cinzel;
+}

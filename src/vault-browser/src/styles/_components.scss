@@ -1,0 +1,222 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Reusable Ornate Card matching design/index.html & design/account.html
+.vault-card {
+  background: linear-gradient(180deg, #161922 0%, #11131a 100%);
+  border: 1px solid #3d3424;
+  position: relative;
+  transition: all 0.25s ease-in-out;
+  @include ornate-corners(6px, $gold-primary);
+
+  &:hover {
+    border-color: $gold-primary;
+    box-shadow: 0 0 16px rgba(197, 160, 89, 0.18), inset 0 0 8px rgba(197, 160, 89, 0.05);
+    transform: translateY(-2px);
+  }
+}
+
+// 4 Golden L-Bracket Corner Accents for dashboard cards
+.corner-brackets {
+  position: relative;
+
+  .bracket-tl,
+  .bracket-tr,
+  .bracket-bl,
+  .bracket-br {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .bracket-tl {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid $gold-primary;
+    border-left: 2px solid $gold-primary;
+  }
+
+  .bracket-tr {
+    top: -1px;
+    right: -1px;
+    border-top: 2px solid $gold-primary;
+    border-right: 2px solid $gold-primary;
+  }
+
+  .bracket-bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 2px solid $gold-primary;
+    border-left: 2px solid $gold-primary;
+  }
+
+  .bracket-br {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid $gold-primary;
+    border-right: 2px solid $gold-primary;
+  }
+}
+
+// Modal Frame with Top Maltese Cross Crest ✠
+.vault-frame-ornate {
+  position: relative;
+  border: 2px solid #8e733c;
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.9), 0 0 18px rgba(197, 160, 89, 0.2);
+
+  &::before {
+    content: '✠';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #dfb96c;
+    background: #12141c;
+    padding: 0 8px;
+    font-size: 14px;
+    line-height: 1;
+    z-index: 20;
+  }
+}
+
+// Imperial Buttons
+.vault-btn-gold {
+  background: linear-gradient(180deg, #dfb96c 0%, #9a7635 100%);
+  color: #0b0c10;
+  font-family: $font-cinzel;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 1px solid #ffdf94;
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(180deg, #eed08d 0%, #ad853e 100%);
+    box-shadow: 0 0 14px rgba(223, 185, 108, 0.5);
+    color: #000;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.vault-btn-outline {
+  background: rgba(18, 20, 28, 0.8);
+  border: 1px solid #7c6439;
+  color: #dfb96c;
+  font-family: $font-cinzel;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #7c6439;
+    color: #ffffff;
+    border-color: #dfb96c;
+    box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.btn-vault {
+  position: relative;
+  border-radius: 0;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 0 14px rgba(197, 155, 67, 0.4);
+  }
+}
+
+// Badges & Heraldry Tags
+.vault-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-family: $font-cinzel;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: rgba(18, 20, 26, 0.85);
+  border: 1px solid #4a3e29;
+  color: #d1b87d;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+// Custom Checkbox
+.vault-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #12141a;
+  border: 1px solid #5a4b33;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+
+  &:checked {
+    background-color: #9a7635;
+    border-color: #dfb96c;
+
+    &::after {
+      content: '✓';
+      position: absolute;
+      top: -3px;
+      left: 2px;
+      font-size: 11px;
+      color: #0d0f14;
+      font-weight: 900;
+    }
+  }
+}
+
+// Custom Slider
+.vault-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: #2a2822;
+  border-radius: 2px;
+  outline: none;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #dfb96c;
+    border: 2px solid #594119;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(223, 185, 108, 0.7);
+  }
+}
+
+// Purity Seal discount box
+.purity-seal-banner {
+  position: relative;
+  background: #ebd9b2;
+  color: #2c2214;
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border-left: 4px solid #8e1d1d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

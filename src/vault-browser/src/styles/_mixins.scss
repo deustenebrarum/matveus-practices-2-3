@@ -1,0 +1,61 @@
+@use 'variables' as *;
+
+@mixin gold-glow($intensity: 1) {
+  box-shadow: 0 0 calc(12px * #{$intensity}) rgba(197, 160, 89, calc(0.3 * #{$intensity}));
+}
+
+@mixin gold-border-gradient {
+  border: 1px solid $gold-border;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    border-color: $gold-primary;
+    @include gold-glow(1.2);
+  }
+}
+
+@mixin ornate-corners($size: 6px, $color: $gold-primary) {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: $size;
+    height: $size;
+    border-color: $color;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid $color;
+    border-left: 2px solid $color;
+  }
+
+  &::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid $color;
+    border-right: 2px solid $color;
+  }
+}
+
+@mixin scrollbar-custom {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: $vault-black;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #38332b;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: $gold-primary;
+  }
+}

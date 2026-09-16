@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #121317;
+  --color-surface-dim: #121317;
+  --color-surface-bright: #38393d;
+  --color-surface-lowest: #0d0e12;
+  --color-surface-low: #1a1b20;
+  --color-surface-container: #1f1f24;
+  --color-surface-high: #292a2e;
+  --color-surface-highest: #343439;
+  
+  --color-on-surface: #e3e2e7;
+  --color-on-surface-variant: #d0c5af;
+  
+  --color-outline: #99907c;
+  --color-outline-variant: #4d4635;
+  
+  --color-primary: #f2ca50;
+  --color-primary-container: #d4af37;
+  --color-on-primary: #3c2f00;
+  
+  --color-secondary: #ffb4a9;
+  --color-secondary-container: #8a1c14;
+  --color-on-secondary: #690002;
+  
+  --color-tertiary: #dccdaf;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+
+  --font-serif: "EB Garamond", Georgia, serif;
+  --font-cinzel: "Cinzel", Georgia, serif;
+  --font-sans: "Work Sans", system-ui, sans-serif;
+}
+
+/* Custom grimdark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0e12;
+}
+::-webkit-scrollbar-thumb {
+  background: #343439;
+  border-radius: 2px;
+  border: 1px solid #4d4635;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
