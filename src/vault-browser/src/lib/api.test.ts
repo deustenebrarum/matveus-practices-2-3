@@ -33,7 +33,7 @@ test('fetchFactions returns aggregated factions and counts', async () => {
   assert.ok(imp.count >= 2);
 });
 
-test('createOrder fallback calculates 15% bundle discount and 10% promo discount', async () => {
+test('createOrder fallback calculates 10% bundle discount and 10% promo discount', async () => {
   const order = await createOrder({
     customer: {
       fullName: 'Inquisitor Malcor',
@@ -51,9 +51,9 @@ test('createOrder fallback calculates 15% bundle discount and 10% promo discount
   });
 
   assert.strictEqual(order.subtotal, 102.00);
-  assert.strictEqual(order.bundleDiscountAmount, 15.30); // 15% of 102.00
-  assert.strictEqual(order.promoDiscountAmount, 10.20);  // 10% of 102.00
-  assert.strictEqual(order.totalAmount, 76.50);         // 102 - 15.30 - 10.20 = 76.50
+  assert.strictEqual(order.bundleDiscountAmount, 10.20); // 10% of 102.00
+  assert.strictEqual(order.promoDiscountAmount, 9.18);   // 10% of (102.00 - 10.20) = 9.18
+  assert.strictEqual(order.totalAmount, 82.62);         // 102 - 10.20 - 9.18 = 82.62
 });
 
 test('adjustInventory adjusts stock count without negative bounds', async () => {

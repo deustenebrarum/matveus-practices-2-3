@@ -142,8 +142,8 @@
       {#if cart.hasBundleDiscount}
         <PuritySealBanner
           title="Chapter Requisition Rite"
-          subtitle="Bundle Set Discount Applied: -15%"
-          discountText="-15%"
+          subtitle="Bundle Set Discount Applied: -10%"
+          discountText="-10%"
         />
       {/if}
     {/if}
@@ -187,7 +187,7 @@
 
       {#if cart.bundleDiscount > 0}
         <div class="flex justify-between text-emerald-400">
-          <span>Bundle Discount (-15%):</span>
+          <span>Bundle Discount (-10%):</span>
           <span class="font-mono" id="drawerDiscount">
             -${cart.bundleDiscount.toFixed(2)}
           </span>

@@ -279,7 +279,7 @@
             </div>
             {#if cart.bundleDiscount > 0}
               <div class="flex justify-between text-emerald-400">
-                <span>Bundle Discount (-15%):</span>
+                <span>Bundle Discount (-10%):</span>
                 <span class="font-mono">-${cart.bundleDiscount.toFixed(2)}</span>
               </div>
             {/if}

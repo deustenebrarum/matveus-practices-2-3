@@ -8,8 +8,8 @@
 
   let {
     title = 'Chapter Requisition Rite',
-    subtitle = 'Bundle Set Discount Applied: -15%',
-    discountText = '-15%',
+    subtitle = 'Bundle Set Discount Applied: -10%',
+    discountText = '-10%',
     class: className = ''
   }: Props = $props();
 </script>

@@ -48,13 +48,20 @@ class CartState {
     Number(this.items.reduce((acc, it) => acc + it.price * it.quantity, 0).toFixed(2))
   );
 
-  // Bundle discount is 15% when 2+ items or starter set is in cart, as shown in design/index.html
-  hasBundleDiscount = $derived(
-    this.items.length >= 2 || this.items.some(i => i.isStarterSet)
-  );
+  // Bundle discount is 10% when starter set or >= 3 miniatures of the same faction are in cart, matching SPEC_ORDERS.md
+  hasBundleDiscount = $derived.by(() => {
+    if (this.items.some(i => i.isStarterSet)) return true;
+    const factionCounts: Record<string, number> = {};
+    for (const item of this.items) {
+      if (item.faction) {
+        factionCounts[item.faction] = (factionCounts[item.faction] || 0) + item.quantity;
+      }
+    }
+    return Object.values(factionCounts).some(count => count >= 3);
+  });
 
   bundleDiscountRate = $derived(
-    this.hasBundleDiscount ? 0.15 : 0.0
+    this.hasBundleDiscount ? 0.10 : 0.0
   );
 
   bundleDiscount = $derived(
@@ -62,7 +69,7 @@ class CartState {
   );
 
   promoDiscount = $derived(
-    Number((this.subtotal * this.promoDiscountRate).toFixed(2))
+    Number(((this.subtotal - this.bundleDiscount) * this.promoDiscountRate).toFixed(2))
   );
 
   total = $derived(
@@ -154,7 +161,7 @@ class CartState {
       return { success: false, message: 'Please enter a requisition code.' };
     }
 
-    if (trimmed === 'TERRA10') {
+    if (trimmed === 'TERRA10' || trimmed === 'WARHAMMER10') {
       this.promoCode = trimmed;
       this.promoDiscountRate = 0.10;
       this.promoMessage = 'Imperial Sigil Recognized! +10% Requisition Discount.';

@@ -287,10 +287,10 @@ function getLocalOrders(): Order[] {
         }
       ],
       subtotal: 102.00,
-      bundleDiscountAmount: 15.30,
+      bundleDiscountAmount: 10.20,
       promoDiscountAmount: 0,
-      appliedPromoCode: 'BUNDLE15',
-      totalAmount: 86.70,
+      appliedPromoCode: 'BUNDLE10',
+      totalAmount: 91.80,
       status: 'In Transit',
       createdAt: '2026-09-15T10:20:00Z'
     },
@@ -457,9 +457,29 @@ export async function createOrder(request: CreateOrderRequest): Promise<Order> {
   });
 
   const subtotal = orderItems.reduce((acc, curr) => acc + curr.unitPrice * curr.quantity, 0);
-  const bundleDiscount = subtotal * 0.15;
-  const promoDiscount = request.promoCode ? subtotal * 0.10 : 0;
-  const total = Math.max(0, subtotal - bundleDiscount - promoDiscount);
+
+  const hasStarter = orderItems.some(it => it.isStarterSet);
+  const factionCounts: Record<string, number> = {};
+  for (const it of orderItems) {
+    if (it.faction) {
+      factionCounts[it.faction] = (factionCounts[it.faction] || 0) + it.quantity;
+    }
+  }
+  const hasSquadOfSameFaction = Object.values(factionCounts).some(cnt => cnt >= 3);
+  const bundleDiscount = (hasStarter || hasSquadOfSameFaction) ? subtotal * 0.10 : 0;
+  const amountAfterBundle = subtotal - bundleDiscount;
+
+  let promoRate = 0;
+  if (request.promoCode) {
+    const code = request.promoCode.trim().toUpperCase();
+    if (code === 'EMPEROR20') {
+      promoRate = 0.20;
+    } else if (code === 'WARHAMMER10' || code === 'TERRA10' || code === 'WARP-TITHE-10') {
+      promoRate = 0.10;
+    }
+  }
+  const promoDiscount = amountAfterBundle * promoRate;
+  const total = Math.max(0, amountAfterBundle - promoDiscount);
 
   const localOrder: Order = {
     id: `ord-${Date.now()}`,
