@@ -1,0 +1,885 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Commander Dossier | WARHAMMER VAULT — The Emperor's Armoury</title>
+<!-- Google Fonts for Grimdark Gothic & Imperial UI -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&amp;family=Cinzel+Decorative:wght@700&amp;family=Inter:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          void: '#0a0b0e',
+          vault: {
+            black: '#0a0b0e',
+            obsidian: '#101217',
+            slate: '#171a22',
+            card: '#141720',
+            panel: '#151821',
+            border: '#2a2f3d',
+            goldBorder: '#5b4a2d',
+            gold: '#c5a059',
+            brightGold: '#e5c07b',
+            goldBright: '#e5c07b',
+            paleGold: '#f3e5ab',
+            goldDark: '#8a6824',
+            crimson: '#8a1c1c',
+            purityWax: '#961d1d',
+            accentRed: '#ff3b30',
+            parchment: '#dfcaa0',
+            muted: '#8e897e',
+            subtle: '#524e47'
+          }
+        },
+        fontFamily: {
+          serif: ['"Cinzel"', 'serif'],
+          cinzel: ['"Cinzel"', 'serif'],
+          gothic: ['"Cinzel"', 'serif'],
+          cinzelDeco: ['"Cinzel Decorative"', 'serif'],
+          display: ['"Cinzel Decorative"', 'serif'],
+          sans: ['"Inter"', '"Work Sans"', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<!-- Custom Gothic, Grimdark & Border Styles -->
+<style data-purpose="design-system-core">
+  :root {
+    --gold-primary: #c5a059;
+    --gold-glow: rgba(197, 160, 89, 0.35);
+    --gold-dark: #7c6233;
+    --dark-obsidian: #0e1015;
+  }
+
+  body {
+    background-color: #0a0b0e;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(35, 29, 17, 0.45) 0%, transparent 65%),
+      radial-gradient(circle at 100% 100%, rgba(20, 15, 10, 0.5) 0%, transparent 50%);
+    color: #dfcaa0;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Catalog vault-card styling */
+  .vault-card {
+    position: relative;
+    background: linear-gradient(180deg, #13171e 0%, #0e1117 100%);
+    border: 1px solid #38332b;
+  }
+
+  /* 4 Visible Golden Metallic L-Bracket Corner Accents for dashboard cards */
+  .corner-brackets {
+    position: relative;
+  }
+  .corner-brackets .bracket-tl,
+  .corner-brackets .bracket-tr,
+  .corner-brackets .bracket-bl,
+  .corner-brackets .bracket-br {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 20;
+  }
+  .corner-brackets .bracket-tl {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid #c5a059;
+    border-left: 2px solid #c5a059;
+  }
+  .corner-brackets .bracket-tr {
+    top: -1px;
+    right: -1px;
+    border-top: 2px solid #c5a059;
+    border-right: 2px solid #c5a059;
+  }
+  .corner-brackets .bracket-bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 2px solid #c5a059;
+    border-left: 2px solid #c5a059;
+  }
+  .corner-brackets .bracket-br {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid #c5a059;
+    border-right: 2px solid #c5a059;
+  }
+
+  /* Imperial Button Styling - Full straight unbroken borders */
+  .btn-vault {
+    position: relative;
+    border-radius: 0;
+    transition: all 0.2s ease-in-out;
+  }
+  .btn-vault:hover {
+    box-shadow: 0 0 14px rgba(197, 155, 67, 0.4);
+  }
+
+  .vault-btn-gold {
+    background: linear-gradient(180deg, #dfb96c 0%, #9a7635 100%);
+    color: #0b0c10;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: 1px solid #ffdf94;
+    border-radius: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+    transition: all 0.2s ease;
+  }
+  .vault-btn-gold:hover {
+    background: linear-gradient(180deg, #eed08d 0%, #ad853e 100%);
+    box-shadow: 0 0 14px rgba(223, 185, 108, 0.5);
+    color: #000;
+  }
+
+  /* Badges & Tags */
+  .vault-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: rgba(18, 20, 26, 0.85);
+    border: 1px solid #4a3e29;
+    color: #d1b87d;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0b0e;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #38332b;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #c59b43;
+  }
+</style>
+</head>
+<body class="min-h-screen font-sans text-sm selection:bg-amber-900 selection:text-amber-100 flex flex-col justify-between">
+<!-- BEGIN: TopHeader -->
+<header class="sticky top-0 z-40 bg-[#0f1117]/95 border-b border-[#3b3221] backdrop-blur-md shadow-2xl">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+<!-- Brand Crest & Name -->
+<div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.href='index.html'">
+<div class="relative w-12 h-10 flex items-center justify-center"><img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/041252f3-b14e-4afe-9bf6-9e6db2cc38d6/d91enql-0f775463-ef24-4efc-9885-8dc574172e59.png/v1/fill/w_900,h_335/40k_imperial_aquila_transparent__by_fuguestock_d91enql-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MzM1IiwicGF0aCI6Ii9mLzA0MTI1MmYzLWIxNGUtNGFmZS05YmY2LTllNmRiMmNjMzhkNi9kOTFlbnFsLTBmNzc1NDYzLWVmMjQtNGVmYy05ODg1LThkYzU3NDE3MmU1OS5wbmciLCJ3aWR0aCI6Ijw9OTAwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.-vXS5nbicneuJrwcJ08aj7Ub59iyn-8qizni3cPv0mQ" alt="Imperial Aquila" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(223,185,108,0.6)] group-hover:scale-105 transition-transform duration-300"></div>
+<div class="flex flex-col">
+<span class="font-serif text-xl md:text-2xl font-black tracking-widest text-vault-brightGold drop-shadow uppercase">WARHAMMER VAULT</span>
+<span class="text-[9px] tracking-[0.3em] uppercase text-vault-gold/70 -mt-1 font-cinzel" style="margin-left: 1rem;">The Emperor's Armoury</span>
+</div>
+</div>
+<!-- Search Input Container -->
+<div class="flex-1 max-w-xl mx-4 hidden md:block"><div class="relative flex items-center w-full bg-transparent"><svg class="w-4 h-4 text-vault-brightGold shrink-0 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><input class="w-full rounded pl-9 pr-3 py-2 text-xs sm:text-sm text-gray-200 placeholder-gray-500 bg-[#0c0e14] border border-[#5a482b] focus:border-vault-gold focus:outline-none transition-colors" id="catalogSearch" placeholder="Search miniatures, factions, wargear, warscrolls..." type="text"></div></div>
+<!-- Right Actions: Account & Cart Trigger -->
+<div class="flex items-center gap-4">
+<a href="index.html" class="hidden sm:flex items-center gap-1.5 text-xs font-cinzel font-medium text-gray-300 hover:text-vault-brightGold transition-colors px-2 py-1">
+  Catalog
+</a>
+<button class="hidden sm:flex items-center gap-2 text-xs font-cinzel font-medium text-vault-brightGold border-b-2 border-vault-gold pb-0.5 transition-colors px-2 py-1" onclick="window.location.href='account.html'">
+<svg class="w-4 h-4 text-vault-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Account
+        </button>
+<!-- Slide-out Cart Button Trigger -->
+<button aria-label="Open Cart" class="relative flex items-center gap-2.5 px-4 py-2 bg-[#141720] border border-[#7c6439] hover:border-vault-brightGold text-vault-brightGold transition-all shadow-lg hover:shadow-[0_0_15px_rgba(223,185,108,0.3)] group rounded-none" id="openCartBtn" onclick="window.location.href='index.html#cart'"><div class="relative flex items-center"><svg class="w-5 h-5 text-vault-brightGold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span class="absolute -top-2.5 -right-2.5 bg-[#8a1c14] text-[#ffdad5] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-[#ffb4a9]/60 shadow-[0_0_6px_rgba(255,100,100,0.6)] animate-pulse" id="cartBadgeCount">2</span></div><span class="font-cinzel text-xs tracking-wider text-gray-200 group-hover:text-white font-semibold hidden sm:inline">CART: <span class="text-vault-brightGold font-bold" id="cartHeaderAmount">$84.92</span></span></button>
+</div>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: BreadcrumbAndBanner -->
+<section class="border-b border-[#38332b] bg-[#0c0d11]/80 py-4" data-purpose="breadcrumbs-and-title">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center space-x-2 text-[11px] font-gothic tracking-widest text-[#787265] uppercase mb-1">
+<a class="hover:text-vault-gold transition-colors" href="index.html">Home</a>
+<span class="">/</span>
+<a class="hover:text-vault-gold transition-colors" href="index.html">Catalog</a>
+<span class="">/</span>
+<span class="text-vault-gold">Commander Dossier</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+<div>
+<h1 class="font-gothic font-bold text-2xl sm:text-3xl text-[#f2e6cb] tracking-wider uppercase flex items-center gap-3">
+<span class="">Commander Dossier</span>
+</h1>
+<p class="text-xs text-[#8e897e] tracking-wide mt-1">
+Personal credentials, active order tracking, loyalty rewards &amp; order history
+</p>
+</div>
+<div class="flex items-center space-x-2 self-start md:self-auto bg-[#14151a] px-3 py-1.5 border border-[#38332b]">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-gothic text-[11px] uppercase tracking-widest text-[#a7a296]">Account Active</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: BreadcrumbAndBanner -->
+<!-- MAIN CONTENT WRAPPER -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8" data-purpose="user-dashboard">
+<!-- ACTIVE DISPATCH & TRACKING CARD (With 4 Golden L-Brackets) -->
+<section class="vault-card corner-brackets p-6" data-purpose="active-order-tracking">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#38332b] gap-3">
+<div>
+<div class="flex items-center space-x-2.5">
+<span class="font-gothic font-bold text-base text-[#f2e6cb] tracking-wider uppercase">
+            Active Dispatch #WH-84920
+          </span>
+<span class="text-[11px] font-mono text-[#8e897e]">dated Sep 15, 2026</span>
+<span class="bg-amber-950/80 text-amber-300 border border-amber-600/60 text-[10px] px-2 py-0.5 font-gothic font-semibold uppercase">
+            In Transit
+          </span>
+</div>
+<p class="text-xs text-[#8e897e] mt-1">
+          Courier Service: <strong class="text-[#dfcaa0]">CDEK Express</strong> • Tracking Cipher: <span class="font-mono text-vault-gold">CDEK-40K-8492091</span>
+</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="btn-vault px-3.5 py-1.5 bg-[#231b12] hover:bg-[#342717] border border-vault-gold text-vault-gold text-xs font-gothic uppercase tracking-wider flex items-center space-x-1.5">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Track Parcel</span>
+</button>
+</div>
+</div>
+<!-- Timeline Stepper (4 Steps in English) -->
+<div class="mt-6 pt-2">
+<div class="relative">
+<!-- Progress Bar Background -->
+<div class="h-1.5 w-full bg-[#1b1e28] absolute top-3.5 -translate-y-1/2 z-0"></div>
+<!-- Active Progress Bar -->
+<div class="h-1.5 w-[68%] bg-gradient-to-r from-vault-gold via-amber-400 to-amber-300 absolute top-3.5 -translate-y-1/2 z-0 shadow-[0_0_10px_rgba(197,155,67,0.7)]"></div>
+<!-- 4 Steps -->
+<div class="relative z-10 flex justify-between">
+<!-- Step 1: Order Processing (Completed) -->
+<div class="flex flex-col items-center">
+<div class="w-7 h-7 bg-vault-gold border-2 border-vault-gold text-[#0a0b0e] flex items-center justify-center text-xs font-bold shadow-md">
+              ✓
+            </div>
+<span class="font-gothic text-[11px] text-[#f2e6cb] mt-2 font-semibold text-center">1. Order Processing</span>
+<span class="text-[9px] font-mono text-[#787265]">Sep 15, 10:20</span>
+</div>
+<!-- Step 2: Forge Packaging (Completed) -->
+<div class="flex flex-col items-center">
+<div class="w-7 h-7 bg-vault-gold border-2 border-vault-gold text-[#0a0b0e] flex items-center justify-center text-xs font-bold shadow-md">
+              ✓
+            </div>
+<span class="font-gothic text-[11px] text-[#f2e6cb] mt-2 font-semibold text-center">2. Forge Packaging</span>
+<span class="text-[9px] font-mono text-[#787265]">Sep 15, 16:45</span>
+</div>
+<!-- Step 3: Courier Dispatch (Active pulse) -->
+<div class="flex flex-col items-center">
+<div class="w-7 h-7 bg-[#12141a] border-2 border-vault-gold text-vault-gold flex items-center justify-center text-xs font-bold animate-pulse shadow-[0_0_12px_rgba(197,155,67,0.85)]">
+              ⚡
+            </div>
+<span class="font-gothic text-[11px] text-vault-gold mt-2 font-bold tracking-wide text-center">3. In Transit (CDEK)</span>
+<span class="text-[9px] font-mono text-vault-gold/90">Tracking: CDEK-40K-8492091</span>
+</div>
+<!-- Step 4: Ready for Delivery (Pending) -->
+<div class="flex flex-col items-center">
+<div class="w-7 h-7 bg-[#14161f] border-2 border-[#38332b] text-[#555047] flex items-center justify-center text-xs">
+              4
+            </div>
+<span class="font-gothic text-[11px] text-[#736d62] mt-2 text-center">4. Ready for Delivery</span>
+<span class="text-[9px] font-mono text-[#4d473d]">Expected Sep 18</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Order Contents -->
+<div class="mt-8 pt-4 border-t border-[#25221c] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
+<div class="flex items-center space-x-3">
+<span class="text-[#8e897e] text-xs">Consignment Items:</span>
+<div class="flex items-center space-x-2">
+<!-- Miniature thumb 1 -->
+<div class="w-8 h-8 bg-[#181a24] border border-[#38332b] flex items-center justify-center text-[10px] text-vault-gold font-gothic">
+            SM
+          </div>
+<span class="font-gothic text-[#f2e6cb]">Space Marine Captain</span>
+<span class="text-[#656054]">•</span>
+<!-- Miniature thumb 2 -->
+<div class="w-8 h-8 bg-[#181a24] border border-[#38332b] flex items-center justify-center text-[10px] text-vault-gold font-gothic">
+            CP
+          </div>
+<span class="font-gothic text-[#f2e6cb]">Citadel Base Paint Set</span>
+</div>
+</div>
+<div class="text-xs text-[#8e897e]">
+        Delivery Destination: <span class="text-[#dfcaa0]">Moscow, CDEK PVZ #104 (Tverskaya St, 12)</span>
+</div>
+</div>
+</section>
+<!-- TWO COLUMN ROW: Commander Credentials + Loyalty Protocol -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- COMMANDER CREDENTIALS CARD (With 4 Golden L-Brackets) -->
+<section class="lg:col-span-5 vault-card corner-brackets p-6 flex flex-col justify-between" data-purpose="commander-profile-card">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div>
+<!-- Card Header -->
+<div class="flex items-center justify-between border-b border-[#38332b] pb-3 mb-5">
+<h2 class="font-gothic font-bold text-sm tracking-[0.2em] text-vault-gold uppercase">Commander Credentials</h2>
+<span class="text-[10px] font-mono text-[#787265]">USER ID: #USR-9482</span>
+</div>
+<!-- Heraldry Picker Section -->
+<div class="mb-5">
+<label class="block text-[10px] font-gothic uppercase tracking-widest text-[#a7a296] mb-2.5">
+            Favorite Faction Heraldry:
+          </label>
+<div class="grid grid-cols-4 gap-2">
+<!-- 1. Imperium (Active) -->
+<button class="flex flex-col items-center justify-center p-2.5 bg-[#231c14] border-2 border-vault-gold text-vault-gold shadow-[0_0_8px_rgba(197,155,67,0.3)] transition-colors group relative" title="Adeptus Astartes (Imperium)">
+<svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2L4 9l2 9 6 3 6-3 2-9-8-7zm0 3.5l5 4.5-1.5 6.5-3.5-1.7V10h-2v4.8L6.5 16.5 5 10l5-4.5z"></path>
+</svg>
+<span class="text-[9px] font-gothic font-semibold uppercase tracking-wider">Imperium</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-vault-gold rounded-full"></span>
+</button>
+<!-- 2. Chaos -->
+<button class="flex flex-col items-center justify-center p-2.5 bg-[#12141a] border border-[#38332b] hover:border-red-600 text-[#8e897e] hover:text-red-400 transition-colors group" title="Forces of Chaos">
+<svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="3" stroke-width="2"></circle>
+<path d="M12 2v4m0 12v4M2 12h4m12 0h4m-3.1-6.9l-2.8 2.8m-8.2 8.2l-2.8 2.8m0-13.8l2.8 2.8m8.2 8.2l2.8 2.8" stroke-width="2"></path>
+</svg>
+<span class="text-[9px] font-gothic uppercase tracking-wider">Chaos</span>
+</button>
+<!-- 3. Necrons -->
+<button class="flex flex-col items-center justify-center p-2.5 bg-[#12141a] border border-[#38332b] hover:border-emerald-500 text-[#8e897e] hover:text-emerald-400 transition-colors group" title="Necron Dynasty">
+<svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<polygon points="12,2 4,8 7,18 12,22 17,18 20,8" stroke-width="2"></polygon>
+<circle cx="12" cy="12" fill="currentColor" r="2.5"></circle>
+</svg>
+<span class="text-[9px] font-gothic uppercase tracking-wider">Necrons</span>
+</button>
+<!-- 4. Orks -->
+<button class="flex flex-col items-center justify-center p-2.5 bg-[#12141a] border border-[#38332b] hover:border-amber-500 text-[#8e897e] hover:text-amber-400 transition-colors group" title="Ork WAAAGH!">
+<svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
+<path d="M4 6h16v10H4zM6 9h3v4H6zm9 0h3v4h-3zM8 18l4 4 4-4H8z"></path>
+</svg>
+<span class="text-[9px] font-gothic uppercase tracking-wider">Orks</span>
+</button>
+</div>
+</div>
+<!-- Personal Data Fields (With 4 Golden L-Brackets) -->
+<div class="space-y-3 bg-[#0d0f15] p-4 border border-[#38332b] mb-5 corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div>
+<span class="text-[10px] font-gothic uppercase tracking-wider text-[#8e897e] block">Name / Callsign</span>
+<div class="font-gothic font-bold text-base text-[#f2e6cb] mt-0.5">Master Valtor (Vane Malcor)</div>
+</div>
+<div class="pt-2 border-t border-[#25221c]">
+<span class="text-[10px] font-gothic uppercase tracking-wider text-[#8e897e] block">Email Address</span>
+<div class="font-mono text-xs text-[#dfcaa0] mt-0.5">inquisitor.malcor@imperium.vault</div>
+</div>
+<div class="pt-2 border-t border-[#25221c]">
+<span class="text-[10px] font-gothic uppercase tracking-wider text-[#8e897e] block">Phone / Comm-line</span>
+<div class="font-mono text-xs text-vault-gold mt-0.5">+7 (999) 40K-1984</div>
+</div>
+</div>
+</div>
+<!-- Profile Action Buttons -->
+<div class="flex items-center space-x-3 pt-3 border-t border-[#38332b]">
+<button class="btn-vault flex-1 py-2 px-3 bg-[#1d1e27] hover:bg-[#282a36] border border-[#5a482b] text-[#dfcaa0] hover:text-white text-xs font-gothic uppercase tracking-wider">
+          Change Password
+        </button>
+<button class="btn-vault py-2 px-3 bg-[#1e1313] hover:bg-red-950/60 border border-[#7f1d1d] text-red-400 hover:text-red-300 text-xs font-gothic uppercase tracking-wider flex items-center space-x-1">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Log Out</span>
+</button>
+</div>
+</section>
+<!-- MUNITORUM LOYALTY PROTOCOL CARD (With 4 Golden L-Brackets) -->
+<section class="lg:col-span-7 vault-card corner-brackets p-6 flex flex-col justify-between" data-purpose="loyalty-program">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div>
+<!-- Header -->
+<div class="flex items-center justify-between border-b border-[#38332b] pb-3 mb-5">
+<div>
+<h2 class="font-gothic font-bold text-sm tracking-[0.2em] text-vault-gold uppercase">Vault Loyalty Protocol</h2>
+<p class="text-xs text-[#8e897e] mt-0.5">Accumulated tier discount &amp; personal promo codes</p>
+</div>
+<span class="text-xs font-gothic font-bold text-amber-300 bg-amber-950/60 border border-amber-600/50 px-2.5 py-1">
+            Rank: Veteran (7%)
+          </span>
+</div>
+<!-- Progress Indicator (With 4 Golden L-Brackets) -->
+<div class="bg-[#0e1017] border border-[#38332b] p-4 mb-5 corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex items-center justify-between text-xs mb-2">
+<span class="text-[#a7a296] font-sans">Expended <strong class="text-vault-gold font-mono font-bold">34,500 ₽</strong> / 50,000 ₽ to Next Rank</span>
+<span class="text-[11px] font-mono text-emerald-400">Remaining 15,500 ₽</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-[#1c1d26] h-2.5 border border-[#38332b] overflow-hidden p-0.5">
+<div class="bg-gradient-to-r from-vault-gold to-amber-400 h-full shadow-[0_0_8px_rgba(197,155,67,0.7)]" style="width: 69%;"></div>
+</div>
+<!-- Rank Stepper (With Golden Brackets on Cards) -->
+<div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-[#25221c] text-center">
+<!-- Rank 1: Recruit (3%) -->
+<div class="p-2 bg-[#12141a] border border-[#2d2820] corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="text-[10px] font-mono text-[#787265] uppercase">Base Tier</div>
+<div class="font-gothic text-xs font-semibold text-[#8e897e] mt-0.5">Recruit (3%)</div>
+<div class="text-[9px] text-[#5c574c] font-mono mt-0.5">up to 20,000 ₽</div>
+</div>
+<!-- Rank 2: Veteran (7%) (Active with Gold Glow & Brackets) -->
+<div class="p-2 bg-[#251d14] border-2 border-vault-gold shadow-[0_0_10px_rgba(197,155,67,0.35)] relative corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-vault-gold text-[#0a0b0e] text-[8px] font-gothic font-bold uppercase px-1.5 py-0.2">
+                ACTIVE
+              </span>
+<div class="text-[10px] font-mono text-vault-gold uppercase">Current Rank</div>
+<div class="font-gothic text-xs font-bold text-amber-300 mt-0.5">Veteran (7%)</div>
+<div class="text-[9px] text-vault-gold/90 font-mono mt-0.5">from 20,000 ₽</div>
+</div>
+<!-- Rank 3: Master of the Forge (10%) -->
+<div class="p-2 bg-[#12141a] border border-[#2d2820] corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="text-[10px] font-mono text-[#787265] uppercase">Supreme Tier</div>
+<div class="font-gothic text-xs font-semibold text-[#a7a296] mt-0.5">Master of the Forge (10%)</div>
+<div class="text-[9px] text-[#787265] font-mono mt-0.5">from 50,000 ₽</div>
+</div>
+</div>
+</div>
+<!-- Personal Promocodes List (With Corner Brackets) -->
+<div>
+<label class="block text-[10px] font-gothic uppercase tracking-widest text-[#a7a296] mb-2.5">
+            Personal Promo Codes:
+          </label>
+<div class="space-y-2.5">
+<!-- Promo 1 -->
+<div class="flex items-center justify-between p-2.5 bg-[#0f1118] border border-[#38332b] corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex items-center space-x-3">
+<span class="px-2 py-1 bg-[#231b12] border border-vault-gold/60 text-vault-gold font-mono font-bold text-xs tracking-wider">
+                  WARP-TITHE-10
+                </span>
+<div>
+<div class="text-xs text-[#f2e6cb] font-sans">10% off Citadel Paints</div>
+<div class="text-[10px] text-[#787265] font-mono">Valid until Nov 30, 2026</div>
+</div>
+</div>
+<button class="btn-vault px-3 py-1 bg-[#171922] hover:bg-[#25221a] border border-[#5a482b] text-vault-gold text-[10px] font-gothic uppercase tracking-wider" onclick="navigator.clipboard &amp;&amp; navigator.clipboard.writeText('WARP-TITHE-10')">
+                Copy Code
+              </button>
+</div>
+<!-- Promo 2 -->
+<div class="flex items-center justify-between p-2.5 bg-[#0f1118] border border-[#38332b] corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex items-center space-x-3">
+<span class="px-2 py-1 bg-[#231b12] border border-vault-gold/60 text-vault-gold font-mono font-bold text-xs tracking-wider">
+                  FORGE-DISPATCH
+                </span>
+<div>
+<div class="text-xs text-[#f2e6cb] font-sans">Free courier delivery</div>
+<div class="text-[10px] text-[#787265] font-mono">Valid until Oct 15, 2026</div>
+</div>
+</div>
+<button class="btn-vault px-3 py-1 bg-[#171922] hover:bg-[#25221a] border border-[#5a482b] text-vault-gold text-[10px] font-gothic uppercase tracking-wider" onclick="navigator.clipboard &amp;&amp; navigator.clipboard.writeText('FORGE-DISPATCH')">
+                Copy Code
+              </button>
+</div>
+<!-- Promo 3 -->
+<div class="flex items-center justify-between p-2.5 bg-[#0f1118] border border-[#38332b] corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex items-center space-x-3">
+<span class="px-2 py-1 bg-[#231b12] border border-vault-gold/60 text-vault-gold font-mono font-bold text-xs tracking-wider">
+                  PRIMARIS-GIFT
+                </span>
+<div>
+<div class="text-xs text-[#f2e6cb] font-sans">500 ₽ off Infantry squads</div>
+<div class="text-[10px] text-[#787265] font-mono">Valid until Dec 01, 2026</div>
+</div>
+</div>
+<button class="btn-vault px-3 py-1 bg-[#171922] hover:bg-[#25221a] border border-[#5a482b] text-vault-gold text-[10px] font-gothic uppercase tracking-wider" onclick="navigator.clipboard &amp;&amp; navigator.clipboard.writeText('PRIMARIS-GIFT')">
+                Copy Code
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- ORDER HISTORY ARCHIVES CARD (With 4 Golden L-Brackets) -->
+<section class="vault-card corner-brackets p-6" data-purpose="orders-archive">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#38332b] mb-5 gap-3">
+<div>
+<h2 class="font-gothic font-bold text-base text-[#f2e6cb] tracking-wider uppercase">
+          Order History &amp; Archive
+        </h2>
+<p class="text-xs text-[#8e897e]">Complete ledger of past orders, delivery statuses, and invoices</p>
+</div>
+<div class="flex items-center space-x-2">
+<label class="text-[11px] text-[#8e897e] font-gothic uppercase">Sort by:</label>
+<select class="bg-[#101217] border border-[#5a482b] text-xs text-[#dfcaa0] font-gothic py-1 px-3 focus:outline-none focus:border-vault-gold">
+<option>Date (Newest First)</option>
+<option>Delivered Only</option>
+<option>By Total Value</option>
+</select>
+</div>
+</div>
+<!-- Order Cards List -->
+<div class="space-y-4">
+<!-- Order 1: #WH-84920 (In Transit) -->
+<div class="border border-[#38332b] bg-[#0f1117] p-4 corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#25221c] gap-2">
+<div class="flex flex-wrap items-center gap-3">
+<span class="font-gothic font-bold text-sm text-vault-gold tracking-wide">ORDER #WH-84920</span>
+<span class="text-[11px] font-mono text-[#787265]">15.09.2026</span>
+<span class="bg-amber-950/70 text-amber-300 border border-amber-600/50 text-[10px] px-2.5 py-0.5 font-gothic uppercase font-semibold">
+              In Transit
+            </span>
+</div>
+<div class="text-right">
+<span class="font-gothic font-bold text-base text-[#f2e6cb]">9 840 ₽</span>
+</div>
+</div>
+<div class="py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Items preview -->
+<div class="flex items-center space-x-3.5">
+<!-- preview frame 1 -->
+<div class="w-12 h-12 bg-[#171922] border border-[#38332b] flex items-center justify-center shrink-0 p-1">
+<svg class="w-7 h-7 text-vault-gold" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2l3 5 5 1-4 4 1 5-5-3-5 3 1-5-4-4 5-1z"></path>
+</svg>
+</div>
+<!-- preview frame 2 -->
+<div class="w-12 h-12 bg-[#171922] border border-[#38332b] flex items-center justify-center shrink-0 p-1">
+<svg class="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-width="1.75"></path>
+</svg>
+</div>
+<div>
+<h4 class="font-gothic font-semibold text-xs text-[#dfcaa0]">Space Marine Captain, Citadel Base Paint Set</h4>
+<p class="text-[11px] text-[#787265] mt-0.5">2 Items total • Dispatch via CDEK</p>
+</div>
+</div>
+<!-- Buttons -->
+<div class="flex items-center space-x-2 shrink-0">
+<button class="btn-vault px-3 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic uppercase text-[#c59b43]">
+              Details
+            </button>
+<button class="btn-vault px-3 py-1.5 bg-[#251d14] hover:bg-vault-gold hover:text-black border border-vault-gold text-xs font-gothic font-semibold uppercase text-vault-gold transition-colors">
+              Repeat Order
+            </button>
+<button class="btn-vault px-2.5 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic text-[#a7a296] hover:text-[#dfcaa0]" title="Download Invoice (PDF)">
+<svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">PDF</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Order 2: #WH-73109 (Delivered) -->
+<div class="border border-[#38332b] bg-[#0f1117] p-4 corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#25221c] gap-2">
+<div class="flex flex-wrap items-center gap-3">
+<span class="font-gothic font-bold text-sm text-vault-gold tracking-wide">ORDER #WH-73109</span>
+<span class="text-[11px] font-mono text-[#787265]">28.05.2026</span>
+<span class="bg-emerald-950/70 text-emerald-300 border border-emerald-600/50 text-[10px] px-2.5 py-0.5 font-gothic uppercase font-semibold">
+              Delivered
+            </span>
+</div>
+<div class="text-right">
+<span class="font-gothic font-bold text-base text-[#f2e6cb]">6 490 ₽</span>
+</div>
+</div>
+<div class="py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Items preview -->
+<div class="flex items-center space-x-3.5">
+<div class="w-12 h-12 bg-[#171922] border border-[#38332b] flex items-center justify-center shrink-0 p-1">
+<svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<polygon points="12,2 4,8 7,18 12,22 17,18 20,8" stroke-width="2"></polygon>
+<circle cx="12" cy="12" fill="currentColor" r="3"></circle>
+</svg>
+</div>
+<div>
+<h4 class="font-gothic font-semibold text-xs text-[#dfcaa0]">Necron Overlord with Hyperphase Blade</h4>
+<p class="text-[11px] text-[#787265] mt-0.5">+ Necron Warriors Squad (10 models)</p>
+</div>
+</div>
+<!-- Buttons -->
+<div class="flex items-center space-x-2 shrink-0">
+<button class="btn-vault px-3 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic uppercase text-[#c59b43]">
+              Details
+            </button>
+<button class="btn-vault px-3 py-1.5 bg-[#251d14] hover:bg-vault-gold hover:text-black border border-vault-gold text-xs font-gothic font-semibold uppercase text-vault-gold transition-colors">
+              Repeat Order
+            </button>
+<button class="btn-vault px-2.5 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic text-[#a7a296] hover:text-[#dfcaa0]" title="Download Invoice (PDF)">
+<svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">PDF</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Order 3: #WH-65912 (Delivered) -->
+<div class="border border-[#38332b] bg-[#0f1117] p-4 corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#25221c] gap-2">
+<div class="flex flex-wrap items-center gap-3">
+<span class="font-gothic font-bold text-sm text-vault-gold tracking-wide">ORDER #WH-65912</span>
+<span class="text-[11px] font-mono text-[#787265]">14.02.2026</span>
+<span class="bg-emerald-950/70 text-emerald-300 border border-emerald-600/50 text-[10px] px-2.5 py-0.5 font-gothic uppercase font-semibold">
+              Delivered
+            </span>
+</div>
+<div class="text-right">
+<span class="font-gothic font-bold text-base text-[#f2e6cb]">12 350 ₽</span>
+</div>
+</div>
+<div class="py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Items preview -->
+<div class="flex items-center space-x-3.5">
+<div class="w-12 h-12 bg-[#171922] border border-[#38332b] flex items-center justify-center shrink-0 p-1">
+<svg class="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2l2.5 5.5L20 8l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"></path>
+</svg>
+</div>
+<div>
+<h4 class="font-gothic font-semibold text-xs text-[#dfcaa0]">Chaos Space Marine Havocs Fireteam</h4>
+<p class="text-[11px] text-[#787265] mt-0.5">Black Legion • Heavy Weapons Support</p>
+</div>
+</div>
+<!-- Buttons -->
+<div class="flex items-center space-x-2 shrink-0">
+<button class="btn-vault px-3 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic uppercase text-[#c59b43]">
+              Details
+            </button>
+<button class="btn-vault px-3 py-1.5 bg-[#251d14] hover:bg-vault-gold hover:text-black border border-vault-gold text-xs font-gothic font-semibold uppercase text-vault-gold transition-colors">
+              Repeat Order
+            </button>
+<button class="btn-vault px-2.5 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic text-[#a7a296] hover:text-[#dfcaa0]" title="Download Invoice (PDF)">
+<svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">PDF</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Order 4: #WH-51204 (Canceled) -->
+<div class="border border-[#38332b] bg-[#0f1117] p-4 opacity-85 corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#25221c] gap-2">
+<div class="flex flex-wrap items-center gap-3">
+<span class="font-gothic font-bold text-sm text-[#8e897e] tracking-wide">ORDER #WH-51204</span>
+<span class="text-[11px] font-mono text-[#787265]">10.11.2025</span>
+<span class="bg-[#1f2128] text-[#8e897e] border border-[#3d4251] text-[10px] px-2.5 py-0.5 font-gothic uppercase font-semibold">
+              Canceled
+            </span>
+</div>
+<div class="text-right">
+<span class="font-gothic font-bold text-base text-[#8e897e]">3 890 ₽</span>
+</div>
+</div>
+<div class="py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Items preview -->
+<div class="flex items-center space-x-3.5">
+<div class="w-12 h-12 bg-[#171922] border border-[#38332b] flex items-center justify-center shrink-0 p-1">
+<svg class="w-7 h-7 text-[#6a655b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<h4 class="font-gothic font-semibold text-xs text-[#a7a296]">Ork Boyz Mob (10 figures)</h4>
+<p class="text-[11px] text-[#635f55] mt-0.5">Order canceled by customer</p>
+</div>
+</div>
+<!-- Buttons -->
+<div class="flex items-center space-x-2 shrink-0">
+<button class="btn-vault px-3 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic uppercase text-[#c59b43]">
+              Details
+            </button>
+<button class="btn-vault px-3 py-1.5 bg-[#251d14] hover:bg-vault-gold hover:text-black border border-vault-gold text-xs font-gothic font-semibold uppercase text-vault-gold transition-colors">
+              Repeat Order
+            </button>
+<button class="btn-vault px-2.5 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-gothic text-[#a7a296] hover:text-[#dfcaa0]" title="Download Invoice (PDF)">
+<svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">PDF</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SAVED DELIVERY ADDRESSES (With 4 Golden L-Brackets on All Cards) -->
+<section class="vault-card corner-brackets p-6" data-purpose="saved-delivery-addresses">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#38332b] mb-5 gap-3">
+<div>
+<h2 class="font-gothic font-bold text-base text-[#f2e6cb] tracking-wider uppercase">
+          Saved Delivery Addresses
+        </h2>
+<p class="text-xs text-[#8e897e]">Registered pick-up points (PVZ) and courier addresses for rapid checkout</p>
+</div>
+<button class="btn-vault px-3.5 py-2 bg-[#251d14] hover:bg-vault-gold hover:text-[#0a0b0e] border border-vault-gold text-vault-gold text-xs font-gothic uppercase font-semibold tracking-wider flex items-center space-x-1.5 self-start sm:self-auto transition-colors">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">+ Add New Address</span>
+</button>
+</div>
+<!-- Grid of 3 Saved Addresses with 4 L-brackets each -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Address 1 (Default) -->
+<div class="p-4 bg-[#141822] border-2 border-vault-gold shadow-[0_0_10px_rgba(197,155,67,0.25)] relative flex flex-col justify-between corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[9px] font-gothic uppercase bg-vault-gold text-black px-2 py-0.5 font-bold tracking-wider">
+              Default Address
+            </span>
+<span class="text-xs text-vault-gold font-mono font-bold">CDEK PVZ</span>
+</div>
+<h4 class="font-gothic font-bold text-sm text-[#f2e6cb]">Moscow</h4>
+<p class="text-xs text-[#dfcaa0] mt-1 font-sans">
+            CDEK PVZ #104<br>
+            Tverskaya St, 12, bld. 2
+          </p>
+<div class="text-[11px] text-[#8e897e] mt-2 font-mono">
+            Operating Hours: 10:00 - 21:00
+          </div>
+</div>
+<div class="mt-4 pt-3 border-t border-[#38332b] flex items-center justify-between">
+<label class="flex items-center space-x-2 text-[11px] text-vault-gold cursor-pointer">
+<input checked="" class="text-vault-gold focus:ring-0 bg-[#0c0d12] border-[#5a482b]" name="default_addr" type="radio">
+<span class="font-gothic">Primary</span>
+</label>
+<div class="flex items-center space-x-2">
+<button class="text-xs text-[#a7a296] hover:text-vault-gold transition-colors font-gothic uppercase" title="Edit Address">
+              Edit
+            </button>
+<span class="text-[#38332b]">|</span>
+<button class="text-xs text-red-400 hover:text-red-300 transition-colors font-gothic uppercase" title="Delete Address">
+              Delete
+            </button>
+</div>
+</div>
+</div>
+<!-- Address 2 -->
+<div class="p-4 bg-[#0f1118] border border-[#38332b] relative flex flex-col justify-between corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[9px] font-gothic uppercase bg-[#1f2129] text-[#a7a296] px-2 py-0.5 font-bold tracking-wider">
+              Courier
+            </span>
+<span class="text-xs text-[#8e897e] font-mono">Direct Delivery</span>
+</div>
+<h4 class="font-gothic font-bold text-sm text-[#f2e6cb]">Saint Petersburg</h4>
+<p class="text-xs text-[#dfcaa0] mt-1 font-sans">
+            Courier Delivery<br>
+            Nevsky Ave, 45, apt. 18
+          </p>
+<div class="text-[11px] text-[#8e897e] mt-2 font-mono">
+            Intercom: 18K • Entrance 2
+          </div>
+</div>
+<div class="mt-4 pt-3 border-t border-[#25221c] flex items-center justify-between">
+<label class="flex items-center space-x-2 text-[11px] text-[#a7a296] hover:text-vault-gold cursor-pointer">
+<input class="text-vault-gold focus:ring-0 bg-[#0c0d12] border-[#5a482b]" name="default_addr" type="radio">
+<span class="font-gothic">Set as Primary</span>
+</label>
+<div class="flex items-center space-x-2">
+<button class="text-xs text-[#a7a296] hover:text-vault-gold transition-colors font-gothic uppercase" title="Edit Address">
+              Edit
+            </button>
+<span class="text-[#38332b]">|</span>
+<button class="text-xs text-red-400 hover:text-red-300 transition-colors font-gothic uppercase" title="Delete Address">
+              Delete
+            </button>
+</div>
+</div>
+</div>
+<!-- Address 3 -->
+<div class="p-4 bg-[#0f1118] border border-[#38332b] relative flex flex-col justify-between corner-brackets">
+<span class="bracket-tl"></span><span class="bracket-tr"></span><span class="bracket-bl"></span><span class="bracket-br"></span>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[9px] font-gothic uppercase bg-[#1f2129] text-[#a7a296] px-2 py-0.5 font-bold tracking-wider">
+              Russian Post
+            </span>
+<span class="text-xs text-[#8e897e] font-mono">Postal Relay</span>
+</div>
+<h4 class="font-gothic font-bold text-sm text-[#f2e6cb]">Yekaterinburg</h4>
+<p class="text-xs text-[#dfcaa0] mt-1 font-sans">
+            Postal Office #620000<br>
+            Lenina St, 39
+          </p>
+<div class="text-[11px] text-[#8e897e] mt-2 font-mono">
+            Postal Index: 620000
+          </div>
+</div>
+<div class="mt-4 pt-3 border-t border-[#25221c] flex items-center justify-between">
+<label class="flex items-center space-x-2 text-[11px] text-[#a7a296] hover:text-vault-gold cursor-pointer">
+<input class="text-vault-gold focus:ring-0 bg-[#0c0d12] border-[#5a482b]" name="default_addr" type="radio">
+<span class="font-gothic">Set as Primary</span>
+</label>
+<div class="flex items-center space-x-2">
+<button class="text-xs text-[#a7a296] hover:text-vault-gold transition-colors font-gothic uppercase" title="Edit Address">
+              Edit
+            </button>
+<span class="text-[#38332b]">|</span>
+<button class="text-xs text-red-400 hover:text-red-300 transition-colors font-gothic uppercase" title="Delete Address">
+              Delete
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BEGIN: SiteFooter -->
+<footer class="border-t border-[#38332b] bg-[#0c0d12] py-8 text-[#787265] text-xs mt-12" data-purpose="site-footer">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center space-x-3 text-center md:text-left">
+<svg class="w-8 h-8 text-vault-gold/60 shrink-0" fill="currentColor" viewBox="0 0 64 64">
+<path d="M32 6L28 14H18L24 22L16 28L26 30L20 40L30 36L32 44L34 36L44 40L38 30L48 28L40 22L46 14H36L32 6Z"></path>
+</svg>
+<div>
+<p class="font-gothic text-[#dfcaa0] font-semibold tracking-wider uppercase">WARHAMMER VAULT • MINIATURE STORE</p>
+<p class="text-[10px] text-[#635d52]">Sanctioned tabletop miniatures, painting sets &amp; wargear</p>
+</div>
+</div>
+<div class="flex items-center space-x-6 text-[11px] font-gothic uppercase tracking-wider text-[#a7a296]">
+<a class="hover:text-vault-gold transition-colors" href="index.html">Catalog</a>
+<a class="hover:text-vault-gold transition-colors" href="#">Shipping &amp; Delivery</a>
+<a class="hover:text-vault-gold transition-colors" href="#">Loyalty Protocol</a>
+<a class="hover:text-vault-gold transition-colors" href="#">Customer Support</a>
+</div>
+</div>
+</footer>
+<!-- END: SiteFooter -->
+
+
+</body></html>

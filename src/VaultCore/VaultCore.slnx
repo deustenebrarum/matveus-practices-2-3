@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="VaultCore.Api/VaultCore.Api.csproj" />
+  <Project Path="VaultCore.Modules.Catalog/VaultCore.Modules.Catalog.csproj" />
+  <Project Path="VaultCore.Modules.Inventory/VaultCore.Modules.Inventory.csproj" />
+  <Project Path="VaultCore.Modules.Orders/VaultCore.Modules.Orders.csproj" />
+  <Project Path="VaultCore.SharedKernel/VaultCore.SharedKernel.csproj" />
+  <Project Path="VaultCore.Tests.Integration/VaultCore.Tests.Integration.csproj" />
+  <Project Path="VaultCore.Tests.Unit/VaultCore.Tests.Unit.csproj" />
+</Solution>

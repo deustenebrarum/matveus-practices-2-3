@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageReference Include="Marten.AspNetCore" Version="7.37.1" />
+    <PackageReference Include="WolverineFx.Http" Version="3.7.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VaultCore.SharedKernel\VaultCore.SharedKernel.csproj" />
+    <ProjectReference Include="..\VaultCore.Modules.Catalog\VaultCore.Modules.Catalog.csproj" />
+    <ProjectReference Include="..\VaultCore.Modules.Orders\VaultCore.Modules.Orders.csproj" />
+    <ProjectReference Include="..\VaultCore.Modules.Inventory\VaultCore.Modules.Inventory.csproj" />
+  </ItemGroup>
+
+</Project>

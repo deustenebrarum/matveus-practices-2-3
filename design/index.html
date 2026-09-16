@@ -1,880 +1,807 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WARHAMMER VAULT — Магазин фигурок и варгейма</title>
-  <!-- Google Fonts: Cinzel for Gothic Headers, Inter for clean UI, JetBrains Mono for stats -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
+<!DOCTYPE html><html lang="en" style=""><head></head><body class="bg-vault-black text-gray-200 min-h-screen flex flex-col antialiased selection:bg-vault-gold selection:text-black" style="overflow: auto;"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>WARHAMMER VAULT - Grimdark Miniature Requisition</title>
+<!-- Google Fonts for Grimdark Gothic & Imperial UI -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&amp;family=Cinzel+Decorative:wght@700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            void: '#0B0C0E',
-            panel: '#14171C',
-            elevated: '#1D222A',
-            borderDark: '#2C323D',
-            gold: {
-              DEFAULT: '#C5A059',
-              dark: '#8C6D37',
-              light: '#E5C88A',
-              glow: 'rgba(197, 160, 89, 0.25)'
-            },
-            crimson: {
-              DEFAULT: '#8B1E1E',
-              bright: '#B91C1C'
-            },
-            plasma: '#38BDF8',
-            parchment: '#E2DACB'
+            vault: {
+              black: '#0a0b0e',
+              obsidian: '#101217',
+              slate: '#171a22',
+              card: '#141720',
+              border: '#2a2f3d',
+              goldBorder: '#5b4a2d',
+              gold: '#c5a059',
+              brightGold: '#e5c07b',
+              paleGold: '#f3e5ab',
+              crimson: '#8a1c1c',
+              purityWax: '#961d1d',
+              accentRed: '#ff3b30'
+            }
           },
           fontFamily: {
-            gothic: ['Cinzel', 'serif'],
-            sans: ['Inter', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace']
-          },
-          boxShadow: {
-            'gold-glow': '0 0 15px rgba(197, 160, 89, 0.2)',
-            'gold-lg': '0 0 25px rgba(197, 160, 89, 0.35)',
-            'crimson-glow': '0 0 15px rgba(139, 30, 30, 0.3)'
+            cinzel: ['"Cinzel"', 'serif'],
+            cinzelDeco: ['"Cinzel Decorative"', 'serif'],
+            sans: ['"Inter"', 'sans-serif']
           }
         }
       }
     }
   </script>
-  <style>
-    /* Custom scrollbars and gothic decorations */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0B0C0E; }
-    ::-webkit-scrollbar-thumb { background: #8C6D37; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
-    .gold-gradient-border {
-      border: 1px solid #8C6D37;
-      transition: all 0.2s ease-in-out;
+<!-- BEGIN: Design System Styles -->
+<style data-purpose="design-system-core">
+    :root {
+      --gold-primary: #c5a059;
+      --gold-glow: rgba(197, 160, 89, 0.35);
+      --gold-dark: #7c6233;
+      --dark-obsidian: #0e1015;
     }
-    .gold-gradient-border:hover {
-      border-color: #C5A059;
-      box-shadow: 0 0 15px rgba(197, 160, 89, 0.18);
+
+    body {
+      background-color: #0b0d11;
+      color: #d1d5db;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Reusable Ornate Borders & Corners */
+    .vault-card {
+      background: linear-gradient(180deg, #161922 0%, #11131a 100%);
+      border: 1px solid #3d3424;
+      position: relative;
+      transition: all 0.25s ease-in-out;
+    }
+
+    .vault-card:hover {
+      border-color: #c5a059;
+      box-shadow: 0 0 16px rgba(197, 160, 89, 0.18), inset 0 0 8px rgba(197, 160, 89, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .vault-card::before, .vault-card::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-color: #c5a059;
+      pointer-events: none;
+    }
+    .vault-card::before {
+      top: -1px; left: -1px;
+      border-top: 2px solid #c5a059;
+      border-left: 2px solid #c5a059;
+    }
+    .vault-card::after {
+      bottom: -1px; right: -1px;
+      border-bottom: 2px solid #c5a059;
+      border-right: 2px solid #c5a059;
+    }
+
+    /* Modal Frame Corners */
+    .vault-frame-ornate {
+      position: relative;
+      border: 2px solid #8e733c;
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.9), 0 0 18px rgba(197, 160, 89, 0.2);
+    }
+    .vault-frame-ornate::before {
+      content: '✠';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #dfb96c;
+      background: #12141c;
+      padding: 0 8px;
+      font-size: 14px;
+    }
+
+    /* Buttons */
+    .vault-btn-gold {
+      background: linear-gradient(180deg, #dfb96c 0%, #9a7635 100%);
+      color: #0b0c10;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border: 1px solid #ffdf94;
+      border-radius: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+      transition: all 0.2s ease;
+    }
+    .vault-btn-gold:hover {
+      background: linear-gradient(180deg, #eed08d 0%, #ad853e 100%);
+      box-shadow: 0 0 14px rgba(223, 185, 108, 0.5);
+      color: #000;
+    }
+
+    .vault-btn-outline {
+      background: rgba(18, 20, 28, 0.8);
+      border: 1px solid #7c6439;
+      color: #dfb96c;
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      transition: all 0.2s ease;
+    }
+    .vault-btn-outline:hover {
+      background: #7c6439;
+      color: #ffffff;
+      border-color: #dfb96c;
+      box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+    }
+
+    /* Badges & Tags */
+    .vault-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      border-radius: 9999px;
+      background: rgba(18, 20, 26, 0.85);
+      border: 1px solid #4a3e29;
+      color: #d1b87d;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Custom Checkbox */
+    .vault-checkbox {
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      background-color: #12141a;
+      border: 1px solid #5a4b33;
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+    .vault-checkbox:checked {
+      background-color: #9a7635;
+      border-color: #dfb96c;
+    }
+    .vault-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: -3px;
+      left: 2px;
+      font-size: 11px;
+      color: #0d0f14;
+      font-weight: 900;
+    }
+
+    /* Custom Slider */
+    .vault-slider {
+      -webkit-appearance: none;
+      height: 4px;
+      background: #2a2822;
+      border-radius: 2px;
+      outline: none;
+    }
+    .vault-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #dfb96c;
+      border: 2px solid #594119;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(223, 185, 108, 0.7);
+    }
+
+    /* Custom Scrollbar for Drawer & Overflows */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d0f14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3e3524;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #735d33;
     }
   </style>
-</head>
-<body class="bg-void text-parchment font-sans min-h-screen flex flex-col antialiased selection:bg-gold-dark selection:text-white">
+<!-- END: Design System Styles -->
 
-  <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 bg-panel/95 backdrop-blur-md border-b border-gold-dark/40 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
-      
-      <!-- LOGO & BRAND -->
-      <div class="flex items-center gap-3 cursor-pointer group" onclick="resetFilters()">
-        <div class="w-10 h-10 rounded-full border border-gold flex items-center justify-center bg-elevated shadow-gold-glow group-hover:scale-105 transition-transform">
-          <!-- Imperial Aquila / Skull SVG -->
-          <svg class="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L14.5 7.5L20 8.5L16 12.5L17 18L12 15L7 18L8 12.5L4 8.5L9.5 7.5L12 2Z"/>
-          </svg>
-        </div>
-        <div>
-          <span class="font-gothic font-black text-xl tracking-widest text-gold block group-hover:text-gold-light transition-colors">WARHAMMER VAULT</span>
-          <span class="text-[10px] tracking-widest uppercase text-muted text-gray-400 font-mono block -mt-1">Оружейная Империума</span>
-        </div>
-      </div>
 
-      <!-- SEARCH BAR -->
-      <div class="flex-1 max-w-xl relative hidden md:block">
-        <input 
-          id="searchInput"
-          type="text" 
-          placeholder="Поиск миниатюр, отрядов, героев (Space Marine, Necron, краски)..."
-          oninput="handleSearch(this.value)"
-          class="w-full bg-void border border-gold-dark/50 rounded-lg px-4 py-2.5 pl-11 text-sm text-parchment placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition"
-        >
-        <svg class="w-5 h-5 text-gold-dark absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </div>
-
-      <!-- NAVIGATION & CART TRIGGER -->
-      <div class="flex items-center gap-5">
-        <nav class="hidden lg:flex items-center gap-6 font-gothic text-xs tracking-wider text-gray-300">
-          <button onclick="filterByUniverse('all')" class="hover:text-gold transition">КАТАЛОГ</button>
-          <button onclick="filterByUniverse('wh40k')" class="hover:text-gold transition">WH 40,000</button>
-          <button onclick="filterByUniverse('aos')" class="hover:text-gold transition">AGE OF SIGMAR</button>
-          <button onclick="filterByCategory('paints')" class="hover:text-gold transition">КРАСКИ CITADEL</button>
-        </nav>
-
-        <!-- CART BUTTON -->
-        <button 
-          onclick="toggleCartDrawer(true)"
-          class="relative bg-crimson hover:bg-crimson-bright border border-gold/40 px-4 py-2 rounded-lg flex items-center gap-3 text-white font-gothic tracking-wider shadow-crimson-glow transition transform active:scale-95"
-        >
-          <svg class="w-5 h-5 text-gold-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-          </svg>
-          <span class="text-sm font-semibold">Корзина:</span>
-          <span id="cartCountBadge" class="bg-gold text-void font-bold font-mono px-2 py-0.5 rounded-full text-xs">0</span>
+<!-- BEGIN: TopHeader -->
+<header class="sticky top-0 z-40 bg-[#0f1117]/95 border-b border-[#3b3221] backdrop-blur-md shadow-2xl">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+<!-- Brand Crest & Name -->
+<div class="flex items-center gap-3 cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<div class="relative w-12 h-10 flex items-center justify-center"><img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/041252f3-b14e-4afe-9bf6-9e6db2cc38d6/d91enql-0f775463-ef24-4efc-9885-8dc574172e59.png/v1/fill/w_900,h_335/40k_imperial_aquila_transparent__by_fuguestock_d91enql-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MzM1IiwicGF0aCI6Ii9mLzA0MTI1MmYzLWIxNGUtNGFmZS05YmY2LTllNmRiMmNjMzhkNi9kOTFlbnFsLTBmNzc1NDYzLWVmMjQtNGVmYy05ODg1LThkYzU3NDE3MmU1OS5wbmciLCJ3aWR0aCI6Ijw9OTAwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.-vXS5nbicneuJrwcJ08aj7Ub59iyn-8qizni3cPv0mQ" alt="Imperial Aquila" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(223,185,108,0.6)] group-hover:scale-105 transition-transform duration-300"></div>
+<div class="flex flex-col">
+<span class="font-serif text-xl md:text-2xl font-black tracking-widest text-vault-brightGold drop-shadow uppercase">WARHAMMER VAULT</span>
+<span class="text-[9px] tracking-[0.3em] uppercase text-vault-gold/70 -mt-1 font-cinzel" style="margin-left: 1rem;">The Emperor's Armoury</span>
+</div>
+</div>
+<!-- Search Input Container -->
+<div class="flex-1 max-w-xl mx-4 hidden md:block"><div class="relative flex items-center w-full bg-transparent"><svg class="w-4 h-4 text-vault-brightGold shrink-0 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><input class="w-full rounded pl-9 pr-3 py-2 text-xs sm:text-sm text-gray-200 placeholder-gray-500 bg-[#0c0e14] border border-[#5a482b] focus:border-vault-gold focus:outline-none transition-colors" id="catalogSearch" placeholder="Search miniatures, factions, wargear, warscrolls..." type="text"></div></div>
+<!-- Right Actions: Account & Cart Trigger -->
+<div class="flex items-center gap-4">
+<a href="index.html" class="hidden sm:flex items-center gap-1.5 text-xs font-cinzel font-medium text-vault-brightGold border-b-2 border-vault-gold pb-0.5 transition-colors px-2 py-1">
+  Catalog
+</a>
+<button class="hidden sm:flex items-center gap-2 text-xs font-cinzel font-medium text-gray-300 hover:text-vault-brightGold transition-colors px-2 py-1" onclick="window.location.href='account.html'">
+<svg class="w-4 h-4 text-vault-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Account
         </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- HERO ANNOUNCEMENT BANNER -->
-  <div class="bg-gradient-to-r from-void via-panel to-void border-b border-gold-dark/30 py-3 text-center px-4">
-    <p class="font-gothic text-xs sm:text-sm tracking-wider text-gold-light">
-      ⚔️ <span class="text-gold font-bold">БОЕВОЙ ПРИКАЗ:</span> Скидка 15% на стартовые наборы и комплекты миниатюр по промокоду <span class="bg-crimson/80 px-2 py-0.5 rounded text-white font-mono text-xs font-bold border border-gold/40">IMPERIUM2026</span>
-    </p>
-  </div>
-
-  <!-- MAIN LAYOUT -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 flex flex-col md:flex-row gap-8">
-    
-    <!-- LEFT SIDEBAR: FILTERS -->
-    <aside class="w-full md:w-72 flex-shrink-0 space-y-6">
-      
-      <!-- FILTER PANEL CONTAINER -->
-      <div class="bg-panel border border-gold-dark/40 rounded-xl p-5 shadow-lg space-y-6 sticky top-28">
-        
-        <div class="flex items-center justify-between border-b border-borderDark pb-3">
-          <h2 class="font-gothic font-bold text-sm tracking-widest text-gold uppercase flex items-center gap-2">
-            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-            </svg>
-            ФИЛЬТРЫ ОРУЖЕЙНОЙ
-          </h2>
-          <button onclick="resetFilters()" class="text-xs text-gray-400 hover:text-gold transition">Сброс</button>
-        </div>
-
-        <!-- FACTIONS FILTER -->
-        <div>
-          <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Альянсы и Фракции</h3>
-          <div class="space-y-2 text-sm">
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="imperium" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
-              <span>Империум Человечества</span>
+<!-- Slide-out Cart Button Trigger -->
+<button aria-label="Open Cart" class="relative flex items-center gap-2.5 px-4 py-2 bg-[#141720] border border-[#7c6439] hover:border-vault-brightGold text-vault-brightGold transition-all shadow-lg hover:shadow-[0_0_15px_rgba(223,185,108,0.3)] group rounded-none" id="openCartBtn"><div class="relative flex items-center"><svg class="w-5 h-5 text-vault-brightGold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span class="absolute -top-2.5 -right-2.5 bg-[#8a1c14] text-[#ffdad5] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-[#ffb4a9]/60 shadow-[0_0_6px_rgba(255,100,100,0.6)] animate-pulse" id="cartBadgeCount">2</span></div><span class="font-cinzel text-xs tracking-wider text-gray-200 group-hover:text-white font-semibold hidden sm:inline">CART: <span class="text-vault-brightGold font-bold" id="cartHeaderAmount">$84.92</span></span></button>
+</div>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: MainStoreLayout -->
+<main class="max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col md:flex-row gap-6">
+<!-- BEGIN: LeftFilterRail -->
+<aside class="w-full md:w-64 shrink-0 space-y-6">
+<div class="bg-[#12141c] border border-[#3b3220] p-4 rounded shadow-xl">
+<!-- Filter Header -->
+<div class="flex items-center justify-between pb-3 border-b border-[#2d281c] mb-4">
+<h2 class="font-cinzel text-sm font-bold tracking-widest text-vault-brightGold flex items-center gap-2">
+<span class="">FILTERS</span>
+</h2>
+<button class="text-[10px] uppercase font-cinzel text-gray-400 hover:text-vault-gold transition-colors">Reset All</button>
+</div>
+<!-- Filter Group: Factions -->
+<div class="mb-5 border-b border-[#232632] pb-4">
+<div class="flex items-center justify-between text-xs font-cinzel font-bold text-gray-200 uppercase mb-2.5 cursor-pointer">
+<span class="flex items-center gap-1.5 text-vault-brightGold">FACTIONS</span>
+<span class="text-gray-500 text-sm">▴</span>
+</div>
+<ul class="space-y-2 text-xs"><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer"><span class="w-4 h-4 rounded-sm bg-[#12141c] border border-vault-gold flex items-center justify-center text-vault-brightGold shadow-[0_0_6px_rgba(223,185,108,0.4)]"><svg class="w-3 h-3 text-vault-brightGold" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v7h7v4h-7v7h-4v-7H3v-4h7V2z"></path></svg></span><span class="group-hover:translate-x-0.5 transition-transform text-white font-medium">Imperium</span></label><span class="text-[10px] text-vault-gold font-mono">14</span></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer"><span class="w-4 h-4 rounded-sm bg-[#12141c] border border-vault-gold flex items-center justify-center text-vault-brightGold shadow-[0_0_6px_rgba(223,185,108,0.4)]"><svg class="w-3 h-3 text-vault-brightGold" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v7h7v4h-7v7h-4v-7H3v-4h7V2z"></path></svg></span><span class="group-hover:translate-x-0.5 transition-transform text-white font-medium">Chaos</span></label><span class="text-[10px] text-vault-gold font-mono">9</span></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">Xenos</span></label><span class="text-[10px] text-gray-500 font-mono">12</span></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">Age of Sigmar</span></label><span class="text-[10px] text-gray-500 font-mono">6</span></li></ul>
+</div>
+<!-- Filter Group: Material -->
+<div class="mb-5 border-b border-[#232632] pb-4">
+<div class="flex items-center justify-between text-xs font-cinzel font-bold text-gray-200 uppercase mb-2.5 cursor-pointer">
+<span class="flex items-center gap-1.5 text-vault-brightGold">MATERIAL</span>
+<span class="text-gray-500 text-sm">▴</span>
+</div>
+<ul class="space-y-2 text-xs"><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#12141c] border border-vault-gold flex items-center justify-center text-vault-brightGold shadow-[0_0_6px_rgba(223,185,108,0.4)]"><svg class="w-3 h-3 text-vault-brightGold" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v7h7v4h-7v7h-4v-7H3v-4h7V2z"></path></svg></span><span class="group-hover:translate-x-0.5 transition-transform text-white font-medium">Citadel Plastic</span></label></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">Finecast Resin</span></label></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">White Metal</span></label></li></ul>
+</div>
+<!-- Filter Group: Scale -->
+<div class="mb-5 border-b border-[#232632] pb-4">
+<div class="flex items-center justify-between text-xs font-cinzel font-bold text-gray-200 uppercase mb-2.5 cursor-pointer">
+<span class="flex items-center gap-1.5 text-vault-brightGold">SCALE</span>
+<span class="text-gray-500 text-sm">▴</span>
+</div>
+<ul class="space-y-2 text-xs"><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">28mm Heroic</span></label></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#12141c] border border-vault-gold flex items-center justify-center text-vault-brightGold shadow-[0_0_6px_rgba(223,185,108,0.4)]"><svg class="w-3 h-3 text-vault-brightGold" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v7h7v4h-7v7h-4v-7H3v-4h7V2z"></path></svg></span><span class="group-hover:translate-x-0.5 transition-transform text-white font-medium">32mm Standard</span></label></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">40mm Terminator</span></label></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">Vehicle &amp; Monster</span></label></li></ul>
+</div>
+<!-- Filter Group: Price Range -->
+<div class="mb-5 border-b border-[#232632] pb-4">
+<div class="flex items-center justify-between text-xs font-cinzel font-bold text-gray-200 uppercase mb-2.5">
+<span class="text-vault-brightGold">PRICE RANGE</span>
+<span class="text-xs text-vault-gold font-mono" id="sliderVal">$10 - $150</span>
+</div>
+<input class="vault-slider w-full cursor-pointer" max="250" min="10" oninput="document.getElementById('sliderVal').textContent = '$10 - $' + this.value" type="range" value="150">
+<div class="flex justify-between text-[10px] font-mono text-gray-500 mt-1">
+<span class="">$10</span>
+<span class="">$250</span>
+</div>
+</div>
+<!-- Filter Group: Availability -->
+<div class="mb-2">
+<div class="flex items-center justify-between text-xs font-cinzel font-bold text-gray-200 uppercase mb-2.5 cursor-pointer">
+<span class="text-vault-brightGold">AVAILABILITY</span>
+<span class="text-gray-500 text-sm">▴</span>
+</div>
+<ul class="space-y-2 text-xs"><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#12141c] border border-vault-gold flex items-center justify-center text-vault-brightGold shadow-[0_0_6px_rgba(223,185,108,0.4)]"><svg class="w-3 h-3 text-vault-brightGold" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v7h7v4h-7v7h-4v-7H3v-4h7V2z"></path></svg></span><span class="group-hover:translate-x-0.5 transition-transform text-white font-medium">In Stock Only</span></label></li><li class="flex items-center justify-between text-gray-300 hover:text-white cursor-pointer group"><label class="flex items-center gap-2.5 cursor-pointer w-full"><span class="w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors"></span><span class="group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200">Pre-Orders Available</span></label></li></ul>
+</div>
+</div>
+<script class="">(function initFilterCheckboxes(){const checkedCrossSvg='<svg class="w-3 h-3 text-vault-brightGold" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v7h7v4h-7v7h-4v-7H3v-4h7V2z"></path></svg>';document.querySelectorAll('aside ul li').forEach(item=>{item.addEventListener('click',function(e){e.preventDefault();const box=this.querySelector('label > span:first-child');if(!box)return;const labelText=this.querySelector('label > span:nth-child(2)');const countSpan=this.querySelector(':scope > span:last-child');const isChecked=box.innerHTML.trim().length>0;if(isChecked){box.innerHTML='';box.className='w-4 h-4 rounded-sm bg-[#0c0d12] border border-[#3e3422] group-hover:border-vault-gold/70 flex items-center justify-center transition-colors';if(labelText){labelText.className='group-hover:translate-x-0.5 transition-transform text-gray-400 group-hover:text-gray-200';}if(countSpan&&countSpan!==labelText){countSpan.className='text-[10px] text-gray-500 font-mono';}}else{box.innerHTML=checkedCrossSvg;box.className='w-4 h-4 rounded-sm bg-[#12141c] border border-vault-gold flex items-center justify-center text-vault-brightGold shadow-[0_0_6px_rgba(223,185,108,0.4)]';if(labelText){labelText.className='group-hover:translate-x-0.5 transition-transform text-white font-medium';}if(countSpan&&countSpan!==labelText){countSpan.className='text-[10px] text-vault-gold font-mono';}}});});})();</script></aside>
+<!-- END: LeftFilterRail -->
+<!-- BEGIN: ProductCatalogArea -->
+<section class="flex-1">
+<!-- Catalog Controls & Metrics -->
+<div class="flex items-center justify-end pb-3 mb-4 border-b border-[#2d281c]"><div class="flex items-center gap-3"><span class="text-xs text-gray-400 font-cinzel uppercase tracking-widest font-semibold">Sort by:</span><div class="relative group flex items-center bg-[#12141c] border border-[#5a482b] hover:border-vault-gold/70 focus-within:border-vault-gold rounded-none transition-colors shadow-inner"><select class="appearance-none bg-transparent text-xs font-cinzel tracking-wider text-[#e2be74] py-1.5 pl-3 pr-8 focus:outline-none cursor-pointer uppercase font-medium"><option class="bg-[#0f1117] text-gray-200 py-1">Standard Dispatch (Featured)</option><option class="bg-[#0f1117] text-gray-200 py-1">Points / Price: Low to High</option><option class="bg-[#0f1117] text-gray-200 py-1">Points / Price: High to Low</option><option class="bg-[#0f1117] text-gray-200 py-1">Most Acclaimed Units</option></select><div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-vault-brightGold group-hover:text-amber-300 transition-colors"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div></div></div></div>
+<!-- Miniature Products Grid matching visual reference -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" id="miniaturesCatalog">
+<!-- Product Card 1: Adeptus Astartes Captain (Triggers Modal) -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Adeptus Astartes Primaris Captain', '$42.00', 'Adeptus Astartes', '85 pts', '32mm Plastic Citadel', '5 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Space Marine Captain" class="w-full h-full object-cover object-top filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvrktdY3q6xdAIuPjE0b34GVMYg9lwLvNdBQNC7loqq9AxB3EaWDhCfqORxN01S6iAY-hceugVnndPPZOUvnP0CWBtJmgk3XfRWZsQpjX9RzGUC37ltKBzZVcLI6IHE8CobjltV46D0D-o4N1HcXbU3IpPndAKvMkVE3KKqlId-z6mc5dMiLBKICoAmMJzKnJg3Q2VFGDKmiaU9CtXY9OlC2-7BVAhmLLK2QJDHrVlqJp_kcDwquU"><span class="absolute top-2 left-2 vault-badge text-[10px]"><svg class="w-3.5 h-3.5 inline-block text-vault-brightGold shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 2.5h3.5l-1.5 3 4-1-1 4.5 3 .5-3 2.5 1.5 3.5-3.5-1-1 3.5-4.5-3.5-4.5 3.5-1-3.5-3.5 1 1.5-3.5-3-2.5 3-.5-1-4.5 4 1-1.5-3H10L12 2zm0 5a2 2 0 100 4 2 2 0 000-4z"></path></svg> Imperium</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 32mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Space Marine Captain</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">HERO UNIT</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$42.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Space Marine Captain', 42.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 2: Necron Overlord -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Necron Overlord of the Dynasties', '$48.00', 'Necrons', '90 pts', '32mm Plastic Citadel', '3 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Necron Overlord" class="w-full h-full object-cover object-center filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3D2tP4c1JIFlL4EXEGLvpLtj__xnMxy7dWwni0WjDCbsOrC9EUH8E334jajk4Q1ZiOEoY5XfyP0whf2zMQ6cy0FO1EheyGMPC4x9Zo91jnP2NL6NpiZdoI84R6JioRAeD-k-oVFuwuq1vspyActu8VycUaYX7hmVHKkW5xYnJaWCV-fkEFTOUbKESBADOGEgAHUsWgdD87NJSxTgzD6RqfP_7a_wcwONJN8o8XfgLPgevue0J9jE"><span class="absolute top-2 left-2 vault-badge text-[10px] border-emerald-800 text-emerald-300"><svg class="w-3.5 h-3.5 inline-block text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a4 4 0 00-4 4c0 1.8 1.2 3.3 2.8 3.8L9 11.5H6v2h3.2l-.7 1.5H5v2h2.3L6 20h2.2l1.2-3h5.2l1.2 3h2.2l-1.3-3H19v-2h-3.5l-.7-1.5H18v-2h-3l-1.8-1.7C14.8 9.3 16 7.8 16 6a4 4 0 00-4-4zm0 2.2a1.8 1.8 0 110 3.6 1.8 1.8 0 010-3.6zm-1.8 7.3h3.6l1 2h-5.6l1-2z"></path></svg> Necron</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 32mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Necron Overlord</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">WARLORD</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$48.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Necron Overlord', 48.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 3: Chaos Space Marine Champion -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Chaos Space Marine Chosen Champion', '$36.00', 'Heretic Astartes', '75 pts', '32mm Plastic Citadel', '8 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Chaos Space Marine" class="w-full h-full object-cover object-bottom filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDb8lNEnNNFviDCFAaqTRGy5loL1XcOODtuOB2Zft7-MUYIWHPDin4BQMxFKkf3JQUAwbD1V_j_NTbu0d2bPn4zHsRbCBFReaBapiir31deS7XdRGYeY7Y_FT7DcLghOUKoNpYDWYACExmQIg3w6KIq-PHGo-dBVvOKe5rbq_gTyL2BAh2jRz1DihPBHsuUIEPRTkCDoy8lMYcKjuxpbZhadioRHmM0yuNHeTYJYAUkIY17k9I72g"><span class="absolute top-2 left-2 vault-badge text-[10px] border-red-900 text-red-300"><svg class="w-3.5 h-3.5 inline-block text-red-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.2 4-1.2.7V8l2.5-1.5.8 1.4-2.5 1.5 2 2 1.3-.8.8 1.3-2.1 1.2h2.5v1.6H18l2.1 1.2-.8 1.3-1.3-.8-2 2 2.5 1.5-.8 1.4-2.5-1.5v2.3l1.2.7-2.2 4-2.2-4 1.2-.7V18l-2.5 1.5-.8-1.4 2.5-1.5-2-2-1.3.8-.8-1.3 2.1-1.2H6.5v-1.6H9l-2.1-1.2.8-1.3 1.3.8 2-2-2.5-1.5.8-1.4L11 8V5.7l-1.2-.7L12 1zm0 8.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"></path></svg> Chaos</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 32mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Chaos Space Marine</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">INFANTRY</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$36.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Chaos Space Marine', 36.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 4: Ork Warboss -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Ork Warboss with Attack Squig', '$54.00', 'Orks Waaagh!', '110 pts', '40mm Plastic Citadel', '2 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Ork Warboss" class="w-full h-full object-cover object-top filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgz4ozWqpB6uVkgGfyciahXABrWnLslEEpHz7ux9gVDUHSs9HA60ZoC-zOlv4HJegmJXqqCr7uKgJkPxgUwGiHHOMu79wg-0wucADlwEi3Uw4EkAAaeBKOZ9Td9ELS2APA1UDtr_L_0_QE0u8o70FZnp-_lYF8SjLmtg-8_Ga19_rn2Ra-YVoAo3uSdVQMP43uLfo4kcVV190qqB55LTLzccrWdmlIgo67FBclQTZ-ziixmQS2UC8"><span class="absolute top-2 left-2 vault-badge text-[10px] border-amber-900 text-amber-300"><svg class="w-3.5 h-3.5 inline-block text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3l3 4h10l3-4-1 6 2 3-3 2v6l-3-2-3 2-3-2-3 2v-6l-3-2 2-3-1-6zm4 6v2h2V9H8zm6 0v2h2V9h-2zm-5 4h6v2H9v-2z"></path></svg> Orks</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 40mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Ork Warboss</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">LEADER</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">Low Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$54.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Ork Warboss', 54.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 5: Chaos Havoc Specialist -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Chaos Havoc Heavy Gunner', '$42.00', 'Heretic Astartes', '80 pts', '32mm Plastic Citadel', '6 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Chaos Havoc" class="w-full h-full object-cover object-center filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZpvbZTTNFLuVr53faNe6zwmgdTCmnhcSxP7lKmIMFYuLk7BP9eZQ25ZTEIcaO4IBuRCb3FYEiQu_uRvhkps1_N8ww0Ouvd41yzvZsNR9hoX_WJNWPVWk8s7ix3wsUss1-PO84fAS0SdetchRbBx0DDdHi68taWfAGH-2x_bvohwnqKN3fBg4XtANakB2uf4EbVjCrb_TcsvjHyVsWEyl_25GayLeKtgH8cGLv8P9EnPDSJmSzyfY"><span class="absolute top-2 left-2 vault-badge text-[10px] border-red-900 text-red-300"><svg class="w-3.5 h-3.5 inline-block text-red-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.2 4-1.2.7V8l2.5-1.5.8 1.4-2.5 1.5 2 2 1.3-.8.8 1.3-2.1 1.2h2.5v1.6H18l2.1 1.2-.8 1.3-1.3-.8-2 2 2.5 1.5-.8 1.4-2.5-1.5v2.3l1.2.7-2.2 4-2.2-4 1.2-.7V18l-2.5 1.5-.8-1.4 2.5-1.5-2-2-1.3.8-.8-1.3 2.1-1.2H6.5v-1.6H9l-2.1-1.2.8-1.3 1.3.8 2-2-2.5-1.5.8-1.4L11 8V5.7l-1.2-.7L12 1zm0 8.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"></path></svg> Chaos</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 32mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Chaos Havoc Specialist</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">FIRE SUPPORT</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$42.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Chaos Havoc Specialist', 42.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 6: Chaos Terminator Lord -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Chaos Terminator Lord in Relic Armor', '$49.00', 'Heretic Astartes', '105 pts', '40mm Plastic Citadel', '4 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Chaos Terminator Lord" class="w-full h-full object-cover object-bottom filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_9V-tJHe4D7WwYeTv4uBYT2zlFmzUXfbqbWb7JZ69tmXplaTPPTky-_4s4YSp3WRi5DcsbSK4MJBnKRjBMGGeQ0dDkO_YAPAWsewk_miuZ3UF7Gxp7Albd2djKjeUm2rHgprCU4YQgNuNwOAWe8uF1jHnhfCI57MGpD_Atnl7LZd7cFTsKFuSD4vNhZCgCilVJDW8oYbHE9jUl-NqThkXGrRZfjLTq5ZZtQO97ly3XXE6C038Vfs"><span class="absolute top-2 left-2 vault-badge text-[10px] border-red-900 text-red-300"><svg class="w-3.5 h-3.5 inline-block text-red-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.2 4-1.2.7V8l2.5-1.5.8 1.4-2.5 1.5 2 2 1.3-.8.8 1.3-2.1 1.2h2.5v1.6H18l2.1 1.2-.8 1.3-1.3-.8-2 2 2.5 1.5-.8 1.4-2.5-1.5v2.3l1.2.7-2.2 4-2.2-4 1.2-.7V18l-2.5 1.5-.8-1.4 2.5-1.5-2-2-1.3.8-.8-1.3 2.1-1.2H6.5v-1.6H9l-2.1-1.2.8-1.3 1.3.8 2-2-2.5-1.5.8-1.4L11 8V5.7l-1.2-.7L12 1zm0 8.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"></path></svg> Chaos</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 40mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Chaos Terminator Lord</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">ELITE</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$49.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Chaos Terminator Lord', 49.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 7: Adeptus Custodes Guard -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Adeptus Custodes Guardian Spear', '$58.00', 'Talons of the Emperor', '135 pts', '40mm Plastic Citadel', '3 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Custodes Guard" class="w-full h-full object-cover object-top filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKRaab5L7LIKbwJDE_7SrDtmjNt79FlTVGK5MV13rEGCq6RdA0qnS1HP_MMUmeKERtCkc-BKSn5_u6GGQd2qfRzW7wqJlhejzX5FWMntwjnQ720Bhw96AVewLj3YnNAECLzzzfytisYy1zotoE5vHdkGxxSECkWpoV1o9VXUFW1tyxyUIXjCAGLNsi18VoG5JN5epJhPzy7ADG3mhFJeaCuoZvQwymncJyVCbRu6ZYP7HuejiZ5xI"><span class="absolute top-2 left-2 vault-badge text-[10px] border-amber-500 text-amber-200"><svg class="w-3.5 h-3.5 inline-block text-amber-300 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 2.5h3.5l-1.5 3 4-1-1 4.5 3 .5-3 2.5 1.5 3.5-3.5-1-1 3.5-4.5-3.5-4.5 3.5-1-3.5-3.5 1 1.5-3.5-3-2.5 3-.5-1-4.5 4 1-1.5-3H10L12 2zm0 5a2 2 0 100 4 2 2 0 000-4z"></path></svg> Imperium</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 40mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Custodes Guard</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">BODYGUARD</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$58.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Custodes Guard', 58.00)">Add to Cart</button></div></div></article>
+<!-- Product Card 8: Ork Nob with Big Choppa -->
+<article class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('Ork Nob with Custom Big Choppa', '$38.00', 'Orks Waaagh!', '65 pts', '32mm Plastic Citadel', '7 pcs')"><div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors"><img alt="Ork Nob" class="w-full h-full object-cover object-center filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnrlmIFE2mo5sBm48HGhY2LA-6ysyzEY9DC-BJrrFYulcQskW4qOXKOA6lGRuIwXJ929YZzscAqJ1WsL7MG23sjQyFAjyWmb-EFN31njtBSQTAOxAFqywvCdAyJoeofVIyCJ3v7_pq3yVPNLtrkXC94wPahcgO91u8XGetrHQlAt13TGBRN-GQUi9uB9AYLl8B04qX0fRQR6bLxSnywo3RMIfG9ailStFjsQAH61flGsJOEA-TXpg"><span class="absolute top-2 left-2 vault-badge text-[10px] border-amber-900 text-amber-300"><svg class="w-3.5 h-3.5 inline-block text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3l3 4h10l3-4-1 6 2 3-3 2v6l-3-2-3 2-3-2-3 2v-6l-3-2 2-3-1-6zm4 6v2h2V9H8zm6 0v2h2V9h-2zm-5 4h6v2H9v-2z"></path></svg> Orks</span><span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">SCALE: 32mm</span></div><div class="mt-3 flex-1 flex flex-col justify-between"><h3 class="font-cinzel text-sm font-bold text-gray-100 group-hover:text-vault-brightGold transition-colors truncate">Ork Nob Veteran</h3><div class="flex items-center gap-2 my-2 text-[10px]"><span class="text-gray-400 font-mono">INFANTRY</span><span class="inline-flex items-center text-gray-600 leading-none">•</span><span class="text-emerald-400 font-medium">In Stock</span></div><div class="pt-2.5 border-t border-[#232630] flex items-center justify-between"><span class="font-mono text-base font-bold text-vault-brightGold">$38.00</span><button class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5" onclick="event.stopPropagation(); quickAddToCart('Ork Nob Veteran', 38.00)">Add to Cart</button></div></div></article>
+</div>
+</section>
+<!-- END: ProductCatalogArea -->
+</main>
+<!-- END: MainStoreLayout -->
+<!-- BEGIN: ProductDetailModal -->
+<!-- Grimdark Product Details Modal (Recreated directly from IMAGE_2) -->
+<div aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 transition-opacity duration-300 opacity-0 hidden" id="productModal" role="dialog">
+<!-- Modal Dialog Box -->
+<div class="vault-frame-ornate bg-[#12141c] w-full max-w-4xl rounded-sm p-6 relative max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+<!-- Close Button -->
+<button aria-label="Close modal" class="absolute top-3 right-3 text-vault-gold hover:text-white transition-colors p-1" onclick="closeProductModal()">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Modal Title -->
+<div class="text-center pb-4 mb-4 border-b border-[#3e3422]">
+<h2 class="font-cinzel text-xl sm:text-2xl font-bold tracking-widest text-[#e2be74] drop-shadow" id="modalProductTitle">NECRON OVERLORD OF THE DYNASTIES</h2>
+</div>
+<!-- Modal Content Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+<!-- Left: Image Gallery (5 Cols) -->
+<div class="md:col-span-5 flex flex-col gap-3">
+<div class="relative w-full h-72 bg-[#0a0c10] border border-[#4d3f26] rounded overflow-hidden flex items-center justify-center group shadow-inner">
+<img alt="Miniature Main View" class="w-full h-full object-cover object-center transition-all duration-300" id="modalMainImg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxNa6rIn3rpi0X7fTquTnnXpbhfPRge9JvYu_fCw53xpgUPoPtC-mXdGzGDqRnaS9xMBMNJ_uARoeM1VLTyIW1nLJeYXhEKwaNxQVyHGAIXbZsnEI1tIkvoiN2YM-CHrUyGiW6WqAs_VP9Um4EMomL1LWe6w-GFByor_oAnRelOGM8VqQ6svV6xKrrm9uCFF5ORH01zPCCBkKvFm8g3LtE0fChSacsyhNR2PD2St6ApDLZWLnCj-o">
+<span class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 text-[9px] font-mono text-vault-brightGold border border-vault-gold/40">
+              HIGH RESOLUTION MODEL
+            </span>
+</div>
+<!-- Gallery Thumbnails -->
+<div class="grid grid-cols-4 gap-2">
+<button class="h-16 bg-[#0c0e14] border-2 border-vault-gold rounded overflow-hidden focus:outline-none" onclick="setModalThumbnail(1)">
+<img alt="Front View" class="w-full h-full object-cover object-top" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxdgdVZGFOayuDOcE1JyJlmo6gof5ziIHYy4g6XatRCePR-lHl-6hFYZdlCI0DVdnmlJcdBHtSb_AuqnzjbVuOqx2W-wqH5xlj2E7PdEosDrP1lb85aOW6ZVy3UYB8BfKEZxRPdPMXIUtZKzabZEZm7Xd3y-1-WH6jCWJOY5NVE_H_XOQvEj4TYzMWlSjQ7Jg1SSOse4KOhm1ZZ5br09SvwL_uLW265wTKG7r-kXLfpSNHKZ596gU">
+</button>
+<button class="h-16 bg-[#0c0e14] border border-[#3b3221] hover:border-vault-gold rounded overflow-hidden focus:outline-none" onclick="setModalThumbnail(2)">
+<img alt="Side View" class="w-full h-full object-cover object-center filter brightness-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz1attuzdjflfgitzCn4fbXz-6QEgFGhJGSbD-PtyMB90o2k1VKHbMzNFZN_CjBxCQ-g_l3Da2Or98--taVFSmLi2EDxi-NvxD31eH6YrYJFlm-hhdHTJogoZcwO-hA7ebiVyrCDfRlNYLh857ncySkptNI09PTA3RfsZj2NT4aDvMrNP-Z0TOaqGK9uPZTIfRgrbzjpFDyD0mknmNZGV4eG2j0RSTU5aRmOwTTtdvKctnTQdtci8">
+</button>
+<button class="h-16 bg-[#0c0e14] border border-[#3b3221] hover:border-vault-gold rounded overflow-hidden focus:outline-none" onclick="setModalThumbnail(3)">
+<img alt="Back View" class="w-full h-full object-cover object-bottom filter brightness-85" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd1VsfPI_ib9nS9vHk86SDlQjqmsDC_tL7v-iWUDkSokjjR_1VnmoYviAQLAGHnqzCZeZGtFEzLdne2XeyZ_vxELDjjjvrEEMgaini5NwjscdprZmHdAv2Di3S9YBW3Dz1Ibj0wn9PemMl5zLPPySIhnY3mbc-AioRZ6ftu18RamNPT4D73VenbmaicAQ1r2wSmEORxu69VWpqYC-4cRKG5DrjQ4l1GrxGN4GBcDdcrbBOKXpJTec">
+</button>
+<button class="h-16 bg-[#0c0e14] border border-[#3b3221] hover:border-vault-gold rounded overflow-hidden focus:outline-none" onclick="setModalThumbnail(4)">
+<img alt="Relic Banner Detail" class="w-full h-full object-cover object-top filter brightness-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy9wHTZFEwvCu8Tfl-yJCmR-HmgBzHZbef9w2aTB6oJWTg8sc1X-oyRWnCHlPJedkTd_f_HxDp6ziVIEpIB3ZL918vwMXmn7xyWz9kTwwF8ZDwZBgR7Lq4GNuLaDEHIYJ0VPRrr1_1yszWX-e_YdST3cNEMMkIluE0zTQQaZ8l_GgzVwlctY-nSPmK1JcdhK1SkYpBc-tQK-hZSpCNns7Xd66qGUDzvCHO3ZGVd91N0IKGltOxydA">
+</button>
+</div>
+</div>
+<!-- Right: Technical Specs & Deployment Config (7 Cols) -->
+<div class="md:col-span-7 flex flex-col gap-4">
+<!-- Faction Crest & Badging -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-vault-gold flex items-center justify-center bg-red-950/40 text-vault-brightGold font-cinzel font-bold text-lg">
+                ✠
+              </div>
+<div>
+<h4 class="font-cinzel text-sm font-bold text-white uppercase tracking-wider" id="modalFaction">NECRONS</h4>
+<p class="text-[11px] text-gray-400">Primaris Captain | 32mm Plastic Citadel Miniature</p>
+</div>
+</div>
+<!-- Citadel Authenticity Seal -->
+<div class="text-right">
+<span class="font-cinzel font-black tracking-tighter text-xs text-gray-300 block">CITADEL</span>
+<span class="text-[9px] uppercase tracking-widest text-vault-gold font-mono block">MINIATURES</span>
+</div>
+</div>
+<!-- Specs Table -->
+<div class="grid grid-cols-3 gap-2 bg-[#171a24] p-2.5 rounded border border-[#363022] text-center">
+<div>
+<span class="text-[10px] font-cinzel uppercase text-gray-400 block">SCALE</span>
+<span class="text-xs font-mono font-bold text-vault-brightGold" id="modalScale">32mm Plastic Citadel</span>
+</div>
+<div class="border-x border-[#363022]">
+<span class="text-[10px] font-cinzel uppercase text-gray-400 block">POINTS COST</span>
+<span class="text-xs font-mono font-bold text-emerald-400" id="modalPoints">90 pts</span>
+</div>
+<div>
+<span class="text-[10px] font-cinzel uppercase text-gray-400 block">FACTION</span>
+<span class="text-xs font-cinzel font-bold text-gray-200">Imperium</span>
+</div>
+</div>
+<!-- Wargear Customization -->
+<div>
+<label class="block text-xs font-cinzel font-bold text-vault-brightGold uppercase mb-1">
+              WARGEAR CUSTOMIZATION
             </label>
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="chaos" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
-              <span>Силы Хаоса (Chaos)</span>
-            </label>
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="xenos" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
-              <span>Ксеносы (Некроны, Орки)</span>
-            </label>
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="aos" onchange="applyFilters()" class="faction-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0">
-              <span>Age of Sigmar</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- MATERIAL FILTER -->
-        <div class="border-t border-borderDark pt-4">
-          <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Материал фигурок</h3>
-          <div class="space-y-2 text-sm">
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="plastic" onchange="applyFilters()" class="material-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
-              <span>Citadel Plastic (Пластик)</span>
-            </label>
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="resin" onchange="applyFilters()" class="material-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
-              <span>Смола / Finecast</span>
-            </label>
-            <label class="flex items-center gap-2.5 cursor-pointer hover:text-gold transition">
-              <input type="checkbox" value="paint" onchange="applyFilters()" class="material-checkbox rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
-              <span>Модельная химия и краски</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- SCALE FILTER -->
-        <div class="border-t border-borderDark pt-4">
-          <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Масштаб миниатюры</h3>
-          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-            <button onclick="setScaleFilter('28mm')" class="scale-btn py-1.5 px-3 bg-void border border-gold-dark/40 rounded hover:border-gold text-center transition">28 мм</button>
-            <button onclick="setScaleFilter('32mm')" class="scale-btn py-1.5 px-3 bg-void border border-gold-dark/40 rounded hover:border-gold text-center transition">32 мм</button>
-            <button onclick="setScaleFilter('40mm')" class="scale-btn py-1.5 px-3 bg-void border border-gold-dark/40 rounded hover:border-gold text-center transition">40 мм / HQ</button>
-            <button onclick="setScaleFilter('all')" class="scale-btn py-1.5 px-3 bg-void border border-gold rounded text-gold text-center transition">Все</button>
-          </div>
-        </div>
-
-        <!-- PRICE RANGE SLIDER -->
-        <div class="border-t border-borderDark pt-4">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="font-gothic text-xs font-bold text-gray-300 uppercase tracking-wider">Цена (до)</h3>
-            <span id="priceValue" class="font-mono text-sm text-gold font-bold">15 000 ₽</span>
-          </div>
-          <input 
-            type="range" 
-            id="priceSlider" 
-            min="1000" 
-            max="15000" 
-            step="500" 
-            value="15000" 
-            oninput="handlePriceSlider(this.value)"
-            class="w-full accent-gold bg-void h-1.5 rounded cursor-pointer"
-          >
-        </div>
-
-        <!-- AVAILABILITY -->
-        <div class="border-t border-borderDark pt-4">
-          <label class="flex items-center justify-between cursor-pointer">
-            <span class="text-sm">Только в наличии</span>
-            <input type="checkbox" id="stockOnly" onchange="applyFilters()" class="rounded bg-void border-gold-dark text-gold focus:ring-0" checked>
-          </label>
-        </div>
-
-      </div>
-    </aside>
-
-    <!-- RIGHT: PRODUCT CATALOG GRID -->
-    <section class="flex-1 space-y-6">
-      
-      <!-- CONTROLS & STATS BAR -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-panel/60 border border-gold-dark/30 rounded-lg p-4">
-        <div class="text-sm">
-          Показано миниатюр: <span id="displayedCount" class="font-mono text-gold font-bold">0</span> из <span id="totalCount" class="font-mono text-gray-400">0</span>
-        </div>
-        <div class="flex items-center gap-3 text-sm">
-          <span class="text-gray-400">Сортировка:</span>
-          <select id="sortSelect" onchange="applyFilters()" class="bg-void border border-gold-dark/50 text-parchment rounded px-3 py-1 text-sm focus:outline-none focus:border-gold">
-            <option value="default">По популярности</option>
-            <option value="price-asc">По возрастанию цены</option>
-            <option value="price-desc">По убыванию цены</option>
-            <option value="points">По очкам (Pts)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- PRODUCTS GRID -->
-      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Dynamic product cards will be injected by JavaScript -->
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- PRODUCT DETAIL MODAL -->
-  <div id="productModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-panel border-2 border-gold rounded-2xl max-w-4xl w-full overflow-hidden shadow-gold-lg relative animate-fade-in flex flex-col md:flex-row">
-      
-      <!-- CLOSE BUTTON -->
-      <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-void border border-gold/60 text-gold hover:bg-gold hover:text-void flex items-center justify-center transition">
+<div class="relative">
+<select class="w-full bg-[#171a24] border border-[#4d3f26] text-xs text-gray-200 py-2 px-3 rounded appearance-none focus:border-vault-gold focus:ring-0 cursor-pointer" id="modalWargearSelect">
+<option>Master-Crafted Power Sword &amp; Relic Shield</option>
+<option>Heavy Bolt Pistol &amp; Master-crafted Auto Bolt Rifle</option>
+<option>Thunder Hammer &amp; Plasma Pistol (+10 pts)</option>
+<option>Power Fist &amp; Plasma Pistol</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-vault-gold">
+                ▼
+              </div>
+</div>
+</div>
+<!-- Lore Snippet -->
+<div>
+<span class="text-[11px] font-cinzel font-bold uppercase tracking-wider text-vault-gold block mb-1">LORE SNIPPET</span>
+<p class="text-xs text-gray-400 leading-relaxed italic bg-[#0c0d12] p-2.5 rounded border border-[#232630]">
+              "A stalwart veteran of countless planetary purges, the Primaris Captain leads from the battlefront with absolute resolve. Armed with ancient chapter relics and unyielding faith in the Golden Throne, his presence bolsters the courage of all battle-brothers nearby."
+            </p>
+</div>
+<!-- Stock Availability -->
+<div class="flex items-center justify-between text-xs pt-1">
+<span class="font-cinzel text-gray-400 uppercase">STOCK AVAILABILITY:</span>
+<span class="font-mono text-emerald-400 font-bold" id="modalStock">IN STOCK: 3 PCS</span>
+</div>
+<!-- Quantity Selector and Add-to-Cart Action -->
+<div class="flex items-center gap-3 pt-2">
+<!-- Stepper -->
+<div class="flex items-center bg-[#171a24] border border-[#4d3f26] rounded">
+<button class="px-3 py-2 text-gray-400 hover:text-white font-bold transition-colors" onclick="decrementModalQty()">−</button>
+<span class="px-3 py-2 text-xs font-mono font-bold text-vault-brightGold min-w-[28px] text-center" id="modalQtyDisplay">1</span>
+<button class="px-3 py-2 text-gray-400 hover:text-white font-bold transition-colors" onclick="incrementModalQty()">+</button>
+</div>
+<!-- Primary Add Button -->
+<button class="vault-btn-gold flex-1 py-2.5 px-4 text-xs tracking-wider uppercase font-bold text-black flex items-center justify-center gap-2" id="modalAddToCartBtn" onclick="addModalItemToCart()">
+<span class="">ADD TO CART</span>
+<span class="text-black/60">•</span>
+<span id="modalBtnPrice" class="">$48.00</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: ProductDetailModal -->
+<!-- BEGIN: CartSlideOutDrawer -->
+<!-- Interactive Slide-out Requisition Drawer (Recreated directly from IMAGE_1) -->
+<aside aria-label="Requisition Order Drawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[460px] bg-[#12141c] border-l-2 border-[#5a482b] shadow-2xl transform transition-transform duration-300 flex flex-col translate-x-full" id="cartDrawer">
+<!-- Drawer Header with Aquila & Seal -->
+<div class="p-4 bg-[#161924] border-b border-[#3b3221] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<svg class="w-8 h-7 text-vault-brightGold drop-shadow" fill="currentColor" viewBox="0 0 64 64">
+<path d="M32 6L36 16L48 12L42 22L58 20L48 30L62 34L46 40L56 52L40 46L36 60L32 48L28 60L24 46L8 52L18 40L2 34L16 30L6 20L22 22L16 12L28 16L32 6Z"></path>
+</svg>
+<div>
+<h2 class="font-cinzel text-base font-black tracking-widest text-vault-brightGold">REQUISITION ORDER</h2>
+<span class="text-[9px] font-mono uppercase text-gray-400">Sector Imperialis Munitorum</span>
+</div>
+</div>
+<!-- Close Drawer Button -->
+<button aria-label="Close cart" class="w-8 h-8 rounded border border-[#52442c] text-vault-gold hover:text-white hover:border-vault-brightGold flex items-center justify-center transition-colors text-sm" id="closeCartBtn">
         ✕
       </button>
-
-      <!-- MODAL IMAGE & GALLERY -->
-      <div class="md:w-1/2 p-6 bg-void/70 flex flex-col justify-between border-b md:border-b-0 md:border-r border-borderDark">
-        <div class="flex-1 flex items-center justify-center py-4">
-          <img id="modalMainImg" src="" alt="Миниатюра" class="max-h-72 object-contain rounded-lg filter drop-shadow-2xl">
-        </div>
-        <!-- MINI THUMBNAILS -->
-        <div class="flex items-center justify-center gap-2 pt-4">
-          <div class="w-14 h-14 rounded border-2 border-gold p-1 bg-void cursor-pointer">
-            <img id="modalThumb1" src="" class="w-full h-full object-contain">
+</div>
+<!-- Requisition Item List -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4" id="cartItemsContainer">
+<!-- Cart Item 1 -->
+<div class="flex gap-3 bg-[#171a24] p-3 rounded border border-[#3b3220] relative group">
+<div class="w-16 h-16 bg-black rounded overflow-hidden shrink-0 border border-[#2f2719]">
+<img alt="Space Marine Squad" class="w-full h-full object-cover object-top" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmix_3nOtb3lC5MIHp88FpjqxEsJ1lCbqHIHbh1yhPCKYEe7RRXPOVUi7N6HfkyHmKch2rC-zxhV39xfKkA0tyy-ZbFEs21MX5AvOnV9dg0hD62r9Nwx11V5YB34S-IY-7d6JEX6H3An4op2nvgLDrweVqkVgyVCvud4JRB36_yTC-FZj-uw38tu_TbUlYQoqB4rx38bIV7EA4jStj0BhD4Q5C0GUCL_-xsu600y_9pNYBJF2hSrA">
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<h4 class="font-cinzel text-xs font-bold text-gray-100">Space Marine Tactical Squad</h4>
+<button class="text-gray-500 hover:text-red-400 text-xs" onclick="removeCartItem(this, 39.90)">✕</button>
+</div>
+<p class="text-[10px] text-gray-400">Unit of 10 models • Citadel Multi-part</p>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center bg-[#0e1017] border border-[#3d331f] rounded text-[11px]">
+<button class="px-2 py-0.5 text-gray-400 hover:text-white" onclick="updateCartQty(this, -1, 39.90)">−</button>
+<span class="px-2 text-vault-brightGold font-mono item-qty">1</span>
+<button class="px-2 py-0.5 text-gray-400 hover:text-white" onclick="updateCartQty(this, 1, 39.90)">+</button>
+</div>
+<span class="font-mono text-xs font-bold text-vault-brightGold item-price">$39.90</span>
+</div>
+</div>
+</div>
+<!-- Cart Item 2 -->
+<div class="flex gap-3 bg-[#171a24] p-3 rounded border border-[#3b3220] relative group">
+<div class="w-16 h-16 bg-black rounded overflow-hidden shrink-0 border border-[#2f2719]">
+<img alt="Citadel Base Paint Set" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_ACLw9p31Jh1kwE_qI64Yc9_I70cB16fQq0swI-7Oz_GLOXiblkUrOxkDXZxO2jkSnqTEGzKERsfMRfOOp6sNAmKM6iJReJBZraSFnnf-F2-hS3Ik6emRbetv5M7zRHE8FyXWUZX4K8MDfDAnZDPufdsmlpv-POIK4ufkvmGqlgwu_A4nnAL5VVdZCv4JlQXlhyAdWr5Ql_VK5RA4KqfJxRcbGKapdNBPGC1q49SpGoJoVjwQJSU">
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<h4 class="font-cinzel text-xs font-bold text-gray-100">Citadel Base Paint Set</h4>
+<button class="text-gray-500 hover:text-red-400 text-xs" onclick="removeCartItem(this, 60.00)">✕</button>
+</div>
+<p class="text-[10px] text-gray-400">12 Acrylic Paints &amp; Synthetic Starter Brush</p>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center bg-[#0e1017] border border-[#3d331f] rounded text-[11px]">
+<button class="px-2 py-0.5 text-gray-400 hover:text-white" onclick="updateCartQty(this, -1, 60.00)">−</button>
+<span class="px-2 text-vault-brightGold font-mono item-qty">1</span>
+<button class="px-2 py-0.5 text-gray-400 hover:text-white" onclick="updateCartQty(this, 1, 60.00)">+</button>
+</div>
+<span class="font-mono text-xs font-bold text-vault-brightGold item-price">$60.00</span>
+</div>
+</div>
+</div>
+<!-- Purity Seal Discount Banner (from IMAGE_1) -->
+<div class="relative bg-[#ebd9b2] text-[#2c2214] p-3 rounded-sm shadow-md border-l-4 border-[#8e1d1d] flex items-center justify-between my-4">
+<!-- Wax Seal Icon -->
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-[#8c1b1b] shadow flex items-center justify-center text-[#ffc6c6] font-serif font-black text-sm border-2 border-[#b53a3a] shrink-0">
+            ✠
           </div>
-          <div class="w-14 h-14 rounded border border-gold-dark/40 p-1 bg-void cursor-pointer hover:border-gold transition">
-            <img id="modalThumb2" src="" class="w-full h-full object-contain opacity-70 hover:opacity-100">
-          </div>
-          <div class="w-14 h-14 rounded border border-gold-dark/40 p-1 bg-void cursor-pointer hover:border-gold transition">
-            <img id="modalThumb3" src="" class="w-full h-full object-contain opacity-70 hover:opacity-100">
-          </div>
-        </div>
-      </div>
-
-      <!-- MODAL CONTENT & SPECS -->
-      <div class="md:w-1/2 p-6 flex flex-col justify-between space-y-4">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <span id="modalFactionBadge" class="text-[11px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded bg-elevated border border-gold-dark text-gold font-bold">ADEPTUS ASTARTES</span>
-            <span id="modalUniverseTag" class="text-[10px] uppercase tracking-wider text-gray-400">WH 40,000</span>
-          </div>
-          <h2 id="modalTitle" class="font-gothic text-2xl font-bold text-gold-light tracking-wide">Adeptus Astartes Primaris Captain</h2>
-          <p id="modalSubtitle" class="text-xs text-gray-400 font-mono mt-1">Одиночный командирский юнит (HQ)</p>
-          
-          <!-- SPECS TABLE -->
-          <div class="grid grid-cols-3 gap-2 bg-void p-3 rounded-lg border border-borderDark my-4 text-center">
-            <div>
-              <span class="text-[10px] text-gray-400 block uppercase">Масштаб</span>
-              <span id="modalScale" class="font-mono text-xs text-parchment font-bold">32 мм</span>
-            </div>
-            <div>
-              <span class="text-[10px] text-gray-400 block uppercase">Очки (Pts)</span>
-              <span id="modalPoints" class="font-mono text-xs text-gold font-bold">85 pts</span>
-            </div>
-            <div>
-              <span class="text-[10px] text-gray-400 block uppercase">Материал</span>
-              <span id="modalMaterial" class="font-mono text-xs text-parchment font-bold">Пластик Citadel</span>
-            </div>
-          </div>
-
-          <!-- WARGEAR SELECTOR -->
-          <div class="space-y-1.5 my-3">
-            <label class="text-xs font-gothic text-gray-300 block uppercase tracking-wider">Кастомизация снаряжения (Wargear)</label>
-            <select id="modalWargear" class="w-full bg-void border border-gold-dark/60 text-parchment rounded-lg p-2.5 text-xs font-sans focus:outline-none focus:border-gold">
-              <option>Power Sword & Relic Shield (+0 pts)</option>
-              <option>Plasma Pistol & Power Fist (+10 pts)</option>
-              <option>Heavy Bolt Rifle & Master-crafted Blade (+5 pts)</option>
-            </select>
-          </div>
-
-          <!-- LORE DESCRIPTION -->
-          <p id="modalLore" class="text-xs text-gray-300 leading-relaxed italic border-l-2 border-gold pl-3 py-1">
-            Закаленный ветеран тысячи кампаний. Ведет в бой космодесантников с несокрушимой решимостью, сокрушая врагов Императора древним силовым клинком.
-          </p>
-        </div>
-
-        <!-- FOOTER & ORDER CTA -->
-        <div class="border-t border-borderDark pt-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-gray-400">Наличие на складе:</span>
-            <span id="modalStock" class="font-mono text-xs text-green-400 font-bold flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 5 шт. (в резерве)
-            </span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="flex items-center bg-void border border-gold-dark rounded-lg">
-              <button onclick="adjustModalQty(-1)" class="px-3 py-2 text-gold hover:bg-elevated transition">-</button>
-              <span id="modalQty" class="px-3 py-2 font-mono text-sm font-bold">1</span>
-              <button onclick="adjustModalQty(1)" class="px-3 py-2 text-gold hover:bg-elevated transition">+</button>
-            </div>
-            <button 
-              onclick="addModalToCart()"
-              class="flex-1 bg-gradient-to-r from-gold-dark via-gold to-gold-dark text-void font-gothic font-bold py-3 px-4 rounded-lg tracking-wider hover:brightness-110 shadow-gold-glow transition flex items-center justify-center gap-2"
-            >
-              <span>В КОРЗИНУ — </span>
-              <span id="modalPrice" class="font-mono font-bold">3 490 ₽</span>
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-  <!-- CART DRAWER -->
-  <div id="cartOverlay" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden transition-opacity" onclick="toggleCartDrawer(false)"></div>
-  <aside id="cartDrawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-panel border-l-2 border-gold z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
-    
-    <!-- DRAWER HEADER -->
-    <div class="p-5 border-b border-gold-dark/40 flex items-center justify-between bg-void/80">
-      <div class="flex items-center gap-3">
-        <svg class="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L14.5 7.5L20 8.5L16 12.5L17 18L12 15L7 18L8 12.5L4 8.5L9.5 7.5L12 2Z"/>
-        </svg>
-        <h2 class="font-gothic font-black text-lg tracking-widest text-gold uppercase">ОРДЕР НА СБОРКУ</h2>
-      </div>
-      <button onclick="toggleCartDrawer(false)" class="text-gray-400 hover:text-gold text-lg p-1 transition">✕</button>
-    </div>
-
-    <!-- CART ITEMS LIST -->
-    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4">
-      <!-- Dynamic cart items injected via JS -->
-    </div>
-
-    <!-- BUNDLE DISCOUNT PURITY SEAL BANNER -->
-    <div class="px-5 py-3 bg-elevated/90 border-t border-b border-borderDark flex items-center gap-3">
-      <!-- Wax seal badge icon -->
-      <div class="w-8 h-8 rounded-full bg-crimson border-2 border-gold flex items-center justify-center text-gold font-gothic font-black text-xs shadow-crimson-glow flex-shrink-0">
-        !
-      </div>
-      <div class="text-xs">
-        <span class="font-gothic font-bold text-gold-light block">Комплектная скидка -15%</span>
-        <span class="text-gray-400">При заказе отряда вместе с красками Citadel</span>
-      </div>
-    </div>
-
-    <!-- PROMOCODE INPUT -->
-    <div class="p-5 bg-void/50 border-b border-borderDark space-y-2">
-      <div class="flex gap-2">
-        <input 
-          id="promoInput" 
-          type="text" 
-          placeholder="Промокод (напр. IMPERIUM2026)" 
-          class="flex-1 bg-void border border-gold-dark/50 rounded-lg px-3 py-2 text-xs font-mono text-parchment focus:outline-none focus:border-gold uppercase"
-        >
-        <button onclick="applyPromoCode()" class="bg-elevated hover:bg-gold hover:text-void border border-gold-dark px-4 py-2 rounded-lg text-xs font-gothic tracking-wider transition">
-          Применить
+<div>
+<span class="font-cinzel text-xs font-black tracking-wide block uppercase text-[#5a1b1b]">Chapter Requisition Rite</span>
+<span class="text-[11px] font-semibold text-[#44331e]">Bundle Set Discount Applied: -15%</span>
+</div>
+</div>
+<span class="font-mono text-xs font-bold text-[#8c1b1b]">-15%</span>
+</div>
+</div>
+<!-- Drawer Footer: Promocode & Calculations -->
+<div class="p-4 bg-[#161924] border-t border-[#3b3221] space-y-3">
+<!-- Promo Code Entry -->
+<div class="flex gap-2">
+<input class="flex-1 bg-[#0e1017] border border-[#3b3221] text-xs px-3 py-2 rounded uppercase tracking-wider text-gray-200 placeholder-gray-500 focus:border-vault-gold focus:ring-0" id="promoInput" placeholder="Promo code (e.g., TERRA10)" type="text">
+<button class="vault-btn-outline px-4 py-2 text-xs font-bold uppercase rounded" onclick="applyPromo()">
+          Apply
         </button>
-      </div>
-      <p id="promoMessage" class="text-[11px] font-mono hidden"></p>
-    </div>
-
-    <!-- TOTALS & CHECKOUT BUTTON -->
-    <div class="p-5 bg-panel border-t border-gold-dark/40 space-y-4">
-      <div class="space-y-1.5 text-xs font-mono">
-        <div class="flex justify-between text-gray-400">
-          <span>Подытог:</span>
-          <span id="cartSubtotal">0 ₽</span>
-        </div>
-        <div class="flex justify-between text-crimson-bright">
-          <span>Скидка по ордеру:</span>
-          <span id="cartDiscount">-0 ₽</span>
-        </div>
-        <div class="flex justify-between text-base font-bold text-parchment pt-2 border-t border-borderDark">
-          <span class="font-gothic tracking-wider text-gold">ИТОГО:</span>
-          <span id="cartTotal" class="text-gold-light text-lg">0 ₽</span>
-        </div>
-      </div>
-
-      <button 
-        onclick="proceedToCheckout()"
-        class="w-full bg-gradient-to-r from-gold-dark via-gold to-gold-dark text-void font-gothic font-black text-sm tracking-widest py-3.5 rounded-xl uppercase shadow-gold-glow hover:brightness-110 active:scale-95 transition"
-      >
-        ОФОРМИТЬ ЗАКАЗ
-      </button>
-    </div>
-
-  </aside>
-
-  <!-- FOOTER -->
-  <footer class="bg-void border-t border-gold-dark/30 py-8 text-center text-xs text-gray-500 space-y-2">
-    <p class="font-gothic tracking-wider text-gold-dark">АНО ПОО ММКЦТ «Академия ТОП» • Практика ПМ.02 / ПМ.03 • Соколов Матвей</p>
-    <p>© 2026 Warhammer Vault. Вселенная и товарные знаки принадлежат Games Workshop Ltd.</p>
-  </footer>
-
-  <!-- SCRIPT: APPLICATION STATE & INTERACTION -->
-  <script>
-    // PRODUCT REPOSITORY
-    const products = [
-      {
-        id: 1,
-        title: "Space Marine Primaris Captain",
-        faction: "imperium",
-        factionName: "Adeptus Astartes",
-        universe: "wh40k",
-        material: "plastic",
-        materialName: "Citadel Plastic",
-        scale: "32mm",
-        points: 85,
-        price: 3490,
-        stock: 5,
-        image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
-        lore: "Закаленный ветеран тысяч кампаний. Ведет в бой космодесантников с несокрушимой решимостью, сокрушая врагов Императора силовым мечом."
+</div>
+<!-- Price Breakdown -->
+<div class="space-y-1.5 text-xs pt-1 border-t border-[#262c3b]">
+<div class="flex justify-between text-gray-400">
+<span class="">Subtotal:</span>
+<span class="font-mono text-gray-200" id="drawerSubtotal">$99.90</span>
+</div>
+<div class="flex justify-between text-emerald-400">
+<span class="">Discount (-15%):</span>
+<span class="font-mono" id="drawerDiscount">-$14.98</span>
+</div>
+<div class="flex justify-between text-sm font-cinzel font-bold text-vault-brightGold pt-1 border-t border-[#262c3b]">
+<span class="">Total Order:</span>
+<span class="font-mono text-base font-bold" id="drawerTotal">$84.92</span>
+</div>
+</div>
+<!-- Proceed Checkout CTA -->
+<button class="w-full vault-btn-gold py-3 text-xs tracking-widest uppercase font-black text-black flex items-center justify-center gap-2 shadow-lg hover:shadow-[0_0_20px_rgba(223,185,108,0.4)]" onclick="triggerCheckout()">
+<span class="">PROCEED TO CHECKOUT</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<p class="text-[9px] text-center text-gray-500 uppercase tracking-widest font-cinzel">
+        Blessed by the Administratum • Priority Imperial Shipping
+      </p>
+</div>
+</aside>
+<!-- END: CartSlideOutDrawer -->
+<!-- Drawer Backdrop -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity hidden" id="cartBackdrop" onclick="toggleCartDrawer(false)"></div>
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="application-logic">
+    // State Management
+    const state = {
+      cartOpen: false,
+      modalOpen: false,
+      modalQty: 1,
+      currentProduct: {
+        title: 'Adeptus Astartes Primaris Captain',
+        price: 42.00,
+        faction: 'Adeptus Astartes',
+        points: '85 pts',
+        scale: '32mm Citadel',
+        stock: '5 pcs'
       },
-      {
-        id: 2,
-        title: "Necron Overlord with Tachyon Arrow",
-        faction: "xenos",
-        factionName: "Necrons",
-        universe: "wh40k",
-        material: "plastic",
-        materialName: "Citadel Plastic",
-        scale: "32mm",
-        points: 90,
-        price: 4390,
-        stock: 3,
-        image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
-        lore: "Древний бессмертный монарх некронов, пробудившийся после миллионолетнего сна ради возвращения галактической гегемонии."
-      },
-      {
-        id: 3,
-        title: "Chaos Space Marine Havoc Squad",
-        faction: "chaos",
-        factionName: "Heretic Astartes",
-        universe: "wh40k",
-        material: "plastic",
-        materialName: "Citadel Plastic",
-        scale: "32mm",
-        points: 135,
-        price: 3890,
-        stock: 7,
-        image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
-        lore: "Отряд опустошителей темных богов, оснащенный лазпушками и автопушками для сокрушения тяжелой брони противника."
-      },
-      {
-        id: 4,
-        title: "Ork Warboss in Mega Armour",
-        faction: "xenos",
-        factionName: "Orks",
-        universe: "wh40k",
-        material: "plastic",
-        materialName: "Citadel Plastic",
-        scale: "40mm",
-        points: 120,
-        price: 6690,
-        stock: 2,
-        image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
-        lore: "Самый большой, свирепый и бронированный зеленокожий вожак WAAAGH!, облаченный в неповоротливую мега-броню с клешней."
-      },
-      {
-        id: 5,
-        title: "Lord-Celestant on Dracoth",
-        faction: "aos",
-        factionName: "Stormcast Eternals",
-        universe: "aos",
-        material: "plastic",
-        materialName: "Citadel Plastic",
-        scale: "40mm",
-        points: 190,
-        price: 5290,
-        stock: 4,
-        image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
-        lore: "Грозорожденный вечный в сверкающих доспехах Сигмара верхом на огнедышащем дракоте во Владениях Смертных."
-      },
-      {
-        id: 6,
-        title: "Citadel Base Paint Starter Set (12 баночек)",
-        faction: "imperium",
-        factionName: "Citadel Supply",
-        universe: "all",
-        material: "paint",
-        materialName: "Краски и химия",
-        scale: "28mm",
-        points: 0,
-        price: 4990,
-        stock: 12,
-        image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
-        lore: "Базовый набор акриловых красок Citadel с высокой пигментацией и синтетической кистью для росписи миниатюр."
+      cartItems: [
+        { name: 'Space Marine Squad (10 models)', price: 39.90, qty: 1 },
+        { name: 'Citadel Base Paint Set', price: 60.00, qty: 1 }
+      ],
+      discountRate: 0.15
+    };
+
+    // DOM Elements
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartBackdrop = document.getElementById('cartBackdrop');
+    const openCartBtn = document.getElementById('openCartBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const productModal = document.getElementById('productModal');
+
+    // Cart Drawer Controls
+    function toggleCartDrawer(open) {
+      state.cartOpen = open !== undefined ? open : !state.cartOpen;
+      if (state.cartOpen) {
+        cartDrawer.classList.remove('translate-x-full');
+        cartBackdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      } else {
+        cartDrawer.classList.add('translate-x-full');
+        cartBackdrop.classList.add('hidden');
+        document.body.style.overflow = 'auto';
       }
-    ];
+    }
 
-    // APPLICATION STATE
-    let cart = [
-      { productId: 1, qty: 1 },
-      { productId: 6, qty: 1 }
-    ];
-    let activeModalProduct = null;
-    let modalQuantity = 1;
-    let appliedDiscountPercent = 0;
-    let activeScale = "all";
-    let activeUniverse = "all";
-    let activeCategory = "all";
-    let searchQuery = "";
-    let maxPrice = 15000;
+    openCartBtn.addEventListener('click', () => toggleCartDrawer(true));
+    closeCartBtn.addEventListener('click', () => toggleCartDrawer(false));
 
-    // INITIALIZATION
-    document.addEventListener("DOMContentLoaded", () => {
-      renderProducts();
-      updateCartUI();
+    // Modal Controls
+    function openProductModal(title, priceStr, faction, points, scale, stock) {
+      state.currentProduct = {
+        title: title || 'Space Marine Captain',
+        price: parseFloat((priceStr || '$42.00').replace('$', '')),
+        faction: faction || 'Adeptus Astartes',
+        points: points || '85 pts',
+        scale: scale || '32mm Plastic Citadel',
+        stock: stock || '5 pcs'
+      };
+      state.modalQty = 1;
+
+      // Update Modal DOM
+      document.getElementById('modalProductTitle').textContent = state.currentProduct.title.toUpperCase();
+      document.getElementById('modalFaction').textContent = state.currentProduct.faction.toUpperCase();
+      document.getElementById('modalScale').textContent = state.currentProduct.scale;
+      document.getElementById('modalPoints').textContent = state.currentProduct.points;
+      document.getElementById('modalStock').textContent = 'IN STOCK: ' + state.currentProduct.stock.toUpperCase();
+      document.getElementById('modalQtyDisplay').textContent = state.modalQty;
+      document.getElementById('modalBtnPrice').textContent = '$' + (state.currentProduct.price * state.modalQty).toFixed(2);
+
+      // Reveal Modal
+      productModal.classList.remove('hidden');
+      setTimeout(() => {
+        productModal.classList.remove('opacity-0');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      productModal.classList.add('opacity-0');
+      setTimeout(() => {
+        productModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }, 200);
+    }
+
+    // Modal Background Click
+    productModal.addEventListener('click', (e) => {
+      if (e.target === productModal) {
+        closeProductModal();
+      }
     });
 
-    // RENDER PRODUCT CATALOG
-    function renderProducts() {
-      const grid = document.getElementById("productsGrid");
-      const filtered = getFilteredProducts();
-
-      document.getElementById("displayedCount").innerText = filtered.length;
-      document.getElementById("totalCount").innerText = products.length;
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-16 text-center text-gray-500 font-gothic">
-            <p class="text-lg">По вашему запросу миниатюр в арсенале не найдено.</p>
-            <button onclick="resetFilters()" class="mt-4 text-xs text-gold underline">Сбросить все фильтры</button>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(p => `
-        <div class="bg-panel border border-gold-dark/40 rounded-xl overflow-hidden shadow-lg hover:border-gold hover:shadow-gold-glow transition-all duration-300 flex flex-col group">
-          <!-- CARD IMAGE -->
-          <div class="relative bg-void/80 p-4 h-56 flex items-center justify-center cursor-pointer overflow-hidden" onclick="openProductModal(${p.id})">
-            <span class="absolute top-3 left-3 text-[10px] font-mono px-2 py-0.5 rounded bg-elevated/90 border border-gold-dark/50 text-gold uppercase font-bold">
-              ${p.factionName}
-            </span>
-            <span class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-void/80 text-gray-300 border border-borderDark">
-              ${p.scale}
-            </span>
-            <img src="${p.image}" alt="${p.title}" class="max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
-          </div>
-
-          <!-- CARD BODY -->
-          <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex justify-between items-start gap-2">
-                <h3 onclick="openProductModal(${p.id})" class="font-gothic font-bold text-base text-parchment group-hover:text-gold-light cursor-pointer transition">
-                  ${p.title}
-                </h3>
-              </div>
-              <div class="flex items-center gap-3 text-xs text-gray-400 font-mono mt-2">
-                <span>${p.materialName}</span>
-                ${p.points > 0 ? `<span>•</span><span>${p.points} pts</span>` : ''}
-              </div>
-            </div>
-
-            <!-- CARD FOOTER -->
-            <div class="pt-3 border-t border-borderDark flex items-center justify-between">
-              <div>
-                <span class="text-[10px] text-gray-500 block uppercase font-mono">Цена</span>
-                <span class="font-mono text-lg font-bold text-gold-light">${p.price.toLocaleString('ru-RU')} ₽</span>
-              </div>
-              <button 
-                onclick="addToCart(${p.id}, 1)"
-                class="bg-void hover:bg-gold hover:text-void border border-gold text-gold text-xs font-gothic tracking-wider font-bold px-3.5 py-2 rounded-lg transition active:scale-95 shadow-sm"
-              >
-                В корзину
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // FILTER LOGIC
-    function getFilteredProducts() {
-      const selectedFactions = Array.from(document.querySelectorAll('.faction-checkbox:checked')).map(cb => cb.value);
-      const selectedMaterials = Array.from(document.querySelectorAll('.material-checkbox:checked')).map(cb => cb.value);
-      const stockOnly = document.getElementById('stockOnly').checked;
-
-      return products.filter(p => {
-        // Search query
-        if (searchQuery && !p.title.toLowerCase().includes(searchQuery.toLowerCase()) && !p.factionName.toLowerCase().includes(searchQuery.toLowerCase())) {
-          return false;
-        }
-        // Factions
-        if (selectedFactions.length > 0 && !selectedFactions.includes(p.faction)) {
-          return false;
-        }
-        // Materials
-        if (selectedMaterials.length > 0 && !selectedMaterials.includes(p.material)) {
-          return false;
-        }
-        // Universe
-        if (activeUniverse !== 'all' && p.universe !== 'all' && p.universe !== activeUniverse) {
-          return false;
-        }
-        // Scale
-        if (activeScale !== 'all' && p.scale !== activeScale) {
-          return false;
-        }
-        // Price
-        if (p.price > maxPrice) {
-          return false;
-        }
-        // Stock
-        if (stockOnly && p.stock <= 0) {
-          return false;
-        }
-        return true;
-      }).sort((a, b) => {
-        const sort = document.getElementById('sortSelect').value;
-        if (sort === 'price-asc') return a.price - b.price;
-        if (sort === 'price-desc') return b.price - a.price;
-        if (sort === 'points') return b.points - a.points;
-        return 0;
-      });
-    }
-
-    // FILTER HANDLERS
-    function handleSearch(val) {
-      searchQuery = val;
-      renderProducts();
-    }
-    function handlePriceSlider(val) {
-      maxPrice = parseInt(val);
-      document.getElementById("priceValue").innerText = parseInt(val).toLocaleString('ru-RU') + " ₽";
-      renderProducts();
-    }
-    function setScaleFilter(scale) {
-      activeScale = scale;
-      document.querySelectorAll('.scale-btn').forEach(b => {
-        b.classList.remove('border-gold', 'text-gold');
-        b.classList.add('border-gold-dark/40');
-      });
-      event.target.classList.remove('border-gold-dark/40');
-      event.target.classList.add('border-gold', 'text-gold');
-      renderProducts();
-    }
-    function filterByUniverse(universe) {
-      activeUniverse = universe;
-      renderProducts();
-    }
-    function filterByCategory(cat) {
-      if (cat === 'paints') {
-        document.querySelectorAll('.material-checkbox').forEach(cb => {
-          cb.checked = (cb.value === 'paint');
-        });
-      }
-      renderProducts();
-    }
-    function resetFilters() {
-      searchQuery = "";
-      document.getElementById("searchInput").value = "";
-      document.querySelectorAll('.faction-checkbox').forEach(cb => cb.checked = false);
-      document.querySelectorAll('.material-checkbox').forEach(cb => cb.checked = true);
-      document.getElementById('stockOnly').checked = true;
-      document.getElementById('priceSlider').value = 15000;
-      document.getElementById('priceValue').innerText = "15 000 ₽";
-      activeScale = "all";
-      activeUniverse = "all";
-      maxPrice = 15000;
-      renderProducts();
-    }
-    function applyFilters() {
-      renderProducts();
-    }
-
-    // MODAL WINDOW LOGIC
-    function openProductModal(id) {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      activeModalProduct = p;
-      modalQuantity = 1;
-
-      document.getElementById("modalTitle").innerText = p.title;
-      document.getElementById("modalFactionBadge").innerText = p.factionName;
-      document.getElementById("modalUniverseTag").innerText = p.universe === 'wh40k' ? 'WH 40,000' : 'AGE OF SIGMAR';
-      document.getElementById("modalScale").innerText = p.scale;
-      document.getElementById("modalPoints").innerText = p.points > 0 ? p.points + ' pts' : '—';
-      document.getElementById("modalMaterial").innerText = p.materialName;
-      document.getElementById("modalLore").innerText = p.lore;
-      document.getElementById("modalStock").innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> ${p.stock} шт. (в наличии)`;
-      document.getElementById("modalPrice").innerText = p.price.toLocaleString('ru-RU') + " ₽";
-      document.getElementById("modalQty").innerText = "1";
-
-      document.getElementById("modalMainImg").src = p.image;
-      document.getElementById("modalThumb1").src = p.image;
-      document.getElementById("modalThumb2").src = p.image;
-      document.getElementById("modalThumb3").src = p.image;
-
-      document.getElementById("productModal").classList.remove("hidden");
-    }
-    function closeProductModal() {
-      document.getElementById("productModal").classList.add("hidden");
-      activeModalProduct = null;
-    }
-    function adjustModalQty(delta) {
-      modalQuantity = Math.max(1, modalQuantity + delta);
-      document.getElementById("modalQty").innerText = modalQuantity;
-      if (activeModalProduct) {
-        document.getElementById("modalPrice").innerText = (activeModalProduct.price * modalQuantity).toLocaleString('ru-RU') + " ₽";
-      }
-    }
-    function addModalToCart() {
-      if (activeModalProduct) {
-        addToCart(activeModalProduct.id, modalQuantity);
+    // Keyboard ESC listener
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
         closeProductModal();
-        toggleCartDrawer(true);
+        toggleCartDrawer(false);
+      }
+    });
+
+    // Quantity Incrementers for Modal
+    function incrementModalQty() {
+      state.modalQty++;
+      updateModalQtyUI();
+    }
+
+    function decrementModalQty() {
+      if (state.modalQty > 1) {
+        state.modalQty--;
+        updateModalQtyUI();
       }
     }
 
-    // CART STATE & DRAWER
-    function addToCart(productId, qty = 1) {
-      const existing = cart.find(item => item.productId === productId);
-      if (existing) {
-        existing.qty += qty;
-      } else {
-        cart.push({ productId, qty });
-      }
-      updateCartUI();
+    function updateModalQtyUI() {
+      document.getElementById('modalQtyDisplay').textContent = state.modalQty;
+      const total = (state.currentProduct.price * state.modalQty).toFixed(2);
+      document.getElementById('modalBtnPrice').textContent = '$' + total;
     }
-    function changeCartQty(productId, delta) {
-      const item = cart.find(x => x.productId === productId);
-      if (!item) return;
-      item.qty += delta;
-      if (item.qty <= 0) {
-        cart = cart.filter(x => x.productId !== productId);
-      }
-      updateCartUI();
-    }
-    function removeCartItem(productId) {
-      cart = cart.filter(x => x.productId !== productId);
-      updateCartUI();
-    }
-    function updateCartUI() {
-      const container = document.getElementById("cartItemsContainer");
-      const countBadge = document.getElementById("cartCountBadge");
+
+    function addModalItemToCart() {
+      const selectedWargear = document.getElementById('modalWargearSelect').value;
+      const itemTitle = `${state.currentProduct.title} (${selectedWargear.split('&')[0].trim()})`;
       
-      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-      countBadge.innerText = totalQty;
-
-      if (cart.length === 0) {
-        container.innerHTML = `
-          <div class="py-20 text-center text-gray-500 font-gothic">
-            <p>Ваш ордер на сборку пуст.</p>
-            <p class="text-xs text-gray-600 mt-1">Добавьте миниатюры из каталога.</p>
-          </div>
-        `;
-        document.getElementById("cartSubtotal").innerText = "0 ₽";
-        document.getElementById("cartDiscount").innerText = "-0 ₽";
-        document.getElementById("cartTotal").innerText = "0 ₽";
-        return;
-      }
-
-      let subtotal = 0;
-      container.innerHTML = cart.map(item => {
-        const prod = products.find(p => p.id === item.productId);
-        if (!prod) return '';
-        const linePrice = prod.price * item.qty;
-        subtotal += linePrice;
-
-        return `
-          <div class="bg-void/80 border border-borderDark rounded-lg p-3 flex gap-3 items-center">
-            <img src="${prod.image}" alt="${prod.title}" class="w-14 h-14 object-contain rounded bg-panel p-1">
-            <div class="flex-1 min-w-0">
-              <h4 class="font-gothic text-xs font-bold text-parchment truncate">${prod.title}</h4>
-              <span class="text-[10px] text-gray-400 font-mono">${prod.price.toLocaleString('ru-RU')} ₽ / шт.</span>
-              <div class="flex items-center gap-2 mt-2">
-                <button onclick="changeCartQty(${prod.id}, -1)" class="w-6 h-6 rounded bg-elevated border border-gold-dark/40 text-gold flex items-center justify-center text-xs hover:bg-gold hover:text-void">-</button>
-                <span class="font-mono text-xs font-bold px-1">${item.qty}</span>
-                <button onclick="changeCartQty(${prod.id}, 1)" class="w-6 h-6 rounded bg-elevated border border-gold-dark/40 text-gold flex items-center justify-center text-xs hover:bg-gold hover:text-void">+</button>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="font-mono text-sm font-bold text-gold block">${linePrice.toLocaleString('ru-RU')} ₽</span>
-              <button onclick="removeCartItem(${prod.id})" class="text-[10px] text-crimson-bright hover:underline mt-2">Удалить</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      // Check bundle discount (if cart has both miniatures and paints)
-      const hasMiniatures = cart.some(i => {
-        const p = products.find(x => x.id === i.productId);
-        return p && p.material !== 'paint';
-      });
-      const hasPaints = cart.some(i => {
-        const p = products.find(x => x.id === i.productId);
-        return p && p.material === 'paint';
-      });
-
-      let discount = 0;
-      if ((hasMiniatures && hasPaints) || appliedDiscountPercent > 0) {
-        const effPercent = Math.max(15, appliedDiscountPercent);
-        discount = Math.round(subtotal * (effPercent / 100));
-      }
-
-      const finalTotal = Math.max(0, subtotal - discount);
-
-      document.getElementById("cartSubtotal").innerText = subtotal.toLocaleString('ru-RU') + " ₽";
-      document.getElementById("cartDiscount").innerText = "-" + discount.toLocaleString('ru-RU') + " ₽";
-      document.getElementById("cartTotal").innerText = finalTotal.toLocaleString('ru-RU') + " ₽";
+      quickAddToCart(itemTitle, state.currentProduct.price * state.modalQty);
+      closeProductModal();
+      toggleCartDrawer(true);
     }
 
-    function toggleCartDrawer(open) {
-      const drawer = document.getElementById("cartDrawer");
-      const overlay = document.getElementById("cartOverlay");
-      if (open) {
-        overlay.classList.remove("hidden");
-        drawer.classList.remove("translate-x-full");
+    // Quick Add from Grid
+    function quickAddToCart(title, price) {
+      const existing = state.cartItems.find(i => i.name === title);
+      if (existing) {
+        existing.qty += 1;
       } else {
-        drawer.classList.add("translate-x-full");
-        overlay.classList.add("hidden");
+        state.cartItems.push({ name: title, price: parseFloat(price), qty: 1 });
+      }
+      renderCart();
+      
+      // Visual Feedback on Cart button
+      openCartBtn.classList.add('scale-105', 'border-yellow-400');
+      setTimeout(() => {
+        openCartBtn.classList.remove('scale-105', 'border-yellow-400');
+      }, 250);
+    }
+
+    // Cart Calculations & Updates
+    function updateCartQty(btn, delta, basePrice) {
+      const parent = btn.closest('.flex.items-center');
+      const qtySpan = parent.querySelector('.item-qty');
+      let currentQty = parseInt(qtySpan.textContent);
+      currentQty += delta;
+
+      if (currentQty <= 0) {
+        const itemCard = btn.closest('.group');
+        itemCard.remove();
+      } else {
+        qtySpan.textContent = currentQty;
+        const priceSpan = btn.closest('.flex-1').querySelector('.item-price');
+        priceSpan.textContent = '$' + (currentQty * basePrice).toFixed(2);
+      }
+      recalculateCartTotals();
+    }
+
+    function removeCartItem(btn, basePrice) {
+      const itemCard = btn.closest('.group');
+      itemCard.style.opacity = '0';
+      setTimeout(() => {
+        itemCard.remove();
+        recalculateCartTotals();
+      }, 200);
+    }
+
+    function recalculateCartTotals() {
+      const priceElements = document.querySelectorAll('.item-price');
+      let subtotal = 0;
+      priceElements.forEach(el => {
+        subtotal += parseFloat(el.textContent.replace('$', '')) || 0;
+      });
+
+      const discount = subtotal * state.discountRate;
+      const total = subtotal - discount;
+
+      document.getElementById('drawerSubtotal').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('drawerDiscount').textContent = '-$' + discount.toFixed(2);
+      document.getElementById('drawerTotal').textContent = '$' + total.toFixed(2);
+      document.getElementById('cartHeaderAmount').textContent = '$' + total.toFixed(2);
+      
+      const badge = document.getElementById('cartBadgeCount');
+      badge.textContent = priceElements.length;
+      if (priceElements.length === 0) {
+        badge.classList.add('hidden');
+      } else {
+        badge.classList.remove('hidden');
       }
     }
 
-    function applyPromoCode() {
-      const code = document.getElementById("promoInput").value.trim().toUpperCase();
-      const msg = document.getElementById("promoMessage");
-      if (code === "IMPERIUM2026") {
-        appliedDiscountPercent = 15;
-        msg.innerText = "✓ Промокод активирован! Скидка 15% применена.";
-        msg.className = "text-[11px] font-mono text-green-400 block";
-        updateCartUI();
-      } else if (code) {
-        msg.innerText = "✕ Недействительный промокод.";
-        msg.className = "text-[11px] font-mono text-crimson-bright block";
+    function renderCart() {
+      recalculateCartTotals();
+    }
+
+    function applyPromo() {
+      const input = document.getElementById('promoInput');
+      if (input.value.trim().toUpperCase() === 'TERRA10') {
+        state.discountRate = 0.25;
+        alert('Imperial Sigil Recognized! Total discount increased to 25%.');
+        recalculateCartTotals();
+      } else if (input.value.trim() !== '') {
+        alert('Invalid Imperial Seal or Expired Requisition Code.');
       }
     }
 
-    function proceedToCheckout() {
-      alert("Ордер сформирован! Переход к валидации контактных данных и оформлению доставки через Wolverine API.");
+    function triggerCheckout() {
+      alert('Imperial Requisition Protocol Initiated. Miniature supplies marked for orbital drop dispatch.');
+    }
+
+    // Modal Image Switcher
+    function setModalThumbnail(index) {
+      const img = document.getElementById('modalMainImg');
+      if (index === 1) img.src = "product_modal.jpg";
+      if (index === 2) img.src = "product_modal.jpg";
+      if (index === 3) img.src = "product_modal.jpg";
+      if (index === 4) img.src = "product_modal.jpg";
     }
   </script>
-</body>
-</html>
+<!-- END: InteractiveScripts -->
+
+
+
+
+
+
+</body></html>

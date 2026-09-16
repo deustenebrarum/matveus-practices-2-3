@@ -8,3 +8,25 @@
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# .NET Build Artifacts
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Node / Frontend Build Artifacts
+**/node_modules/
+**/dist/
+.vite/
+.svelte-kit/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test containers & temp
+TestResults/
