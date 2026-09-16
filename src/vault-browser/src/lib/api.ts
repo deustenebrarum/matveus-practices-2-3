@@ -365,8 +365,18 @@ export async function fetchMiniatures(): Promise<Miniature[]> {
       const data = await res.json();
       const serverItems: Miniature[] = Array.isArray(data) ? data : data.items || [];
       if (serverItems.length > 0) {
-        // Merge or return server items
-        return serverItems;
+        // Merge or return server items with normalized USD prices and images
+        return serverItems.map(s => {
+          const fallback = SEED_MINIATURES.find(seed => seed.id === s.id || seed.name.toLowerCase().includes(s.name.toLowerCase().split(' ')[0]));
+          return {
+            ...s,
+            price: s.price > 500 ? Number((s.price / 100).toFixed(2)) : s.price,
+            imageUrl: s.imageUrl?.startsWith('http') ? s.imageUrl : (fallback?.imageUrl || SEED_MINIATURES[0].imageUrl),
+            stock: s.stock ?? 10,
+            inStock: true,
+            unitType: s.tags?.includes('Hero') ? 'HERO UNIT' : s.tags?.includes('StarterSet') ? 'STARTER SET' : 'INFANTRY'
+          };
+        });
       }
     }
   } catch {

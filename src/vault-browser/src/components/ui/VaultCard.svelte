@@ -6,13 +6,15 @@
     class?: string;
     onclick?: (e: MouseEvent) => void;
     children?: Snippet;
+    [key: string]: any;
   }
 
   let {
     brackets = false,
     class: className = '',
     onclick,
-    children
+    children,
+    ...restProps
   }: Props = $props();
 </script>
 
@@ -23,6 +25,7 @@
   tabindex={onclick ? 0 : undefined}
   {onclick}
   onkeydown={onclick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onclick(e as unknown as MouseEvent); } : undefined}
+  {...restProps}
 >
   {#if brackets}
     <span class="bracket-tl" aria-hidden="true"></span>

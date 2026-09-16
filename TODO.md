@@ -10,15 +10,16 @@
 *Базовый шаблон:* `ПРАКТИКА2/Отчет_учебный Амир.docx`
 
 ### 1.1. Программная реализация (Modular Monolith & Critter Stack)
-- [ ] Проектирование модульного монолита с вертикальными срезами: модули `Catalog`, `Orders`, `Inventory`.
-- [ ] Настройка **Marten (.NET 10)**: документные схемы миниатюр, заказов и складских остатков в PostgreSQL 16 (JSONB, Weasel).
-- [ ] Настройка **Wolverine (.NET 10)**: HTTP endpoints, обработчики сообщений, Transactional Outbox для межмодульных событий.
-- [ ] Клиентский SPA-интерфейс на **Svelte 5 Runes** (`MiniatureCard`, `CartDrawer`, `FactionBadge`, `CatalogFilter`) с Tailwind CSS.
+- [x] Проектирование модульного монолита с вертикальными срезами: модули `Catalog`, `Orders`, `Inventory`.
+- [x] Настройка **Marten (.NET 10)**: документные схемы миниатюр, заказов и складских остатков в PostgreSQL 16 (JSONB, Weasel).
+- [x] Настройка **Wolverine (.NET 10)**: HTTP endpoints, обработчики сообщений, Transactional Outbox для межмодульных событий.
+- [x] Клиентский SPA-интерфейс на **Svelte 5 Runes** (`MiniatureCard`, `CartDrawer`, `FactionBadge`, `CatalogFilter`, `AccountView`) с Tailwind CSS.
 
 ### 1.2. Тестирование и фиксация инцидентов разработки
-- [ ] Настройка тестовой среды на реальном PostgreSQL с помощью **Testcontainers for .NET**.
-- [ ] Интеграционные тесты HTTP API и сценариев Wolverine через **Alba (.NET 10)**.
-- [ ] Модульные автотесты доменной логики с библиотекой утверждений **Shouldly** и xUnit.
+- [x] Настройка тестовой среды на реальном PostgreSQL с помощью **Testcontainers for .NET** / локального PostgreSQL 18.
+- [x] Интеграционные тесты HTTP API и сценариев Wolverine через **Alba (.NET 10)** (9/9 тестов успешно).
+- [x] Модульные автотесты доменной логики с библиотекой утверждений **Shouldly** и xUnit (14/14 тестов успешно).
+- [x] Сквозная браузерная верификация всех 5 пользовательских путей в реальном браузере Google Chrome (100% успех).
 - [ ] Замер покрытия кода через Coverlet с фиксацией показателя > 90%.
 - [ ] Документирование 3 багов с листингами ДО/ПОСЛЕ:
   - [ ] Баг 1: Полиморфная сериализация опций wargear миниатюр в Marten JSONB.

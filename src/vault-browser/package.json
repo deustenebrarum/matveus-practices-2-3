@@ -13,6 +13,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "autoprefixer": "^10.6.1",
+    "playwright-core": "^1.63.0",
     "postcss": "^8.5.28",
     "sass": "^1.104.1",
     "svelte": "^5.57.0",

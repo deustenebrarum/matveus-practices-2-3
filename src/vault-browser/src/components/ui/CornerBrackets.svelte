@@ -4,12 +4,13 @@
   interface Props {
     class?: string;
     children?: Snippet;
+    [key: string]: any;
   }
 
-  let { class: className = '', children }: Props = $props();
+  let { class: className = '', children, ...restProps }: Props = $props();
 </script>
 
-<div class="corner-brackets relative {className}">
+<div class="corner-brackets relative {className}" {...restProps}>
   <span class="bracket-tl" aria-hidden="true"></span>
   <span class="bracket-tr" aria-hidden="true"></span>
   <span class="bracket-bl" aria-hidden="true"></span>
