@@ -1,6 +1,8 @@
 <script lang="ts">
   import { cart } from '../lib/state/cart.svelte';
   import { ui } from '../lib/state/ui.svelte';
+
+  let mobileSearchOpen = $state(false);
 </script>
 
 <!-- BEGIN: TopHeader matching design/index.html & design/account.html -->
@@ -8,7 +10,7 @@
   <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
     <!-- Brand Crest & Name -->
     <div
-      class="flex items-center gap-3 cursor-pointer group"
+      class="flex items-center gap-3 cursor-pointer group select-none"
       role="button"
       tabindex="0"
       onclick={() => { ui.navigateTo('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
@@ -31,7 +33,7 @@
       </div>
     </div>
 
-    <!-- Search Input Container -->
+    <!-- Desktop Search Input Container -->
     <div class="flex-1 max-w-xl mx-4 hidden md:block">
       <div class="relative flex items-center w-full bg-transparent">
         <svg class="w-4 h-4 text-vault-brightGold shrink-0 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,10 +51,23 @@
     </div>
 
     <!-- Right Actions: Navigation Links & Cart Trigger -->
-    <div class="flex items-center gap-3 sm:gap-4">
+    <div class="flex items-center gap-2 sm:gap-4">
+      <!-- Mobile Search Toggle Button -->
+      <button
+        type="button"
+        class="md:hidden p-2 text-vault-gold hover:text-white transition-colors cursor-pointer"
+        aria-label="Toggle Search"
+        onclick={() => { mobileSearchOpen = !mobileSearchOpen; }}
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </button>
+
       <!-- Catalog Link -->
       <button
-        class="flex items-center gap-1.5 text-xs font-cinzel font-medium transition-colors px-2 py-1 {ui.activeView === 'catalog' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-300 hover:text-vault-brightGold'}"
+        type="button"
+        class="flex items-center gap-1.5 text-xs font-cinzel font-medium transition-colors px-2 py-1 cursor-pointer {ui.activeView === 'catalog' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-300 hover:text-vault-brightGold'}"
         onclick={() => ui.navigateTo('catalog')}
       >
         Catalog
@@ -60,18 +75,20 @@
 
       <!-- Account Link -->
       <button
-        class="flex items-center gap-2 text-xs font-cinzel font-medium transition-colors px-2 py-1 {ui.activeView === 'account' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-300 hover:text-vault-brightGold'}"
+        type="button"
+        class="flex items-center gap-2 text-xs font-cinzel font-medium transition-colors px-2 py-1 cursor-pointer {ui.activeView === 'account' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-300 hover:text-vault-brightGold'}"
         onclick={() => ui.navigateTo('account')}
       >
         <svg class="w-4 h-4 text-vault-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
-        <span>Account</span>
+        <span class="hidden sm:inline">Account</span>
       </button>
 
       <!-- Admin Warehouse Link -->
       <button
-        class="hidden lg:flex items-center gap-1.5 text-xs font-cinzel font-medium transition-colors px-2 py-1 {ui.activeView === 'admin' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-400 hover:text-vault-brightGold'}"
+        type="button"
+        class="hidden lg:flex items-center gap-1.5 text-xs font-cinzel font-medium transition-colors px-2 py-1 cursor-pointer {ui.activeView === 'admin' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-400 hover:text-vault-brightGold'}"
         onclick={() => ui.navigateTo('admin')}
       >
         <span>Armory Stock</span>
@@ -79,8 +96,9 @@
 
       <!-- Slide-out Cart Button Trigger -->
       <button
+        type="button"
         aria-label="Open Cart"
-        class="relative flex items-center gap-2.5 px-3 sm:px-4 py-2 bg-[#141720] border border-[#7c6439] hover:border-vault-brightGold text-vault-brightGold transition-all shadow-lg hover:shadow-[0_0_15px_rgba(223,185,108,0.3)] group rounded-none {ui.cartHeaderPulsing ? 'scale-105 border-yellow-400' : ''}"
+        class="relative flex items-center gap-2.5 px-3 sm:px-4 py-2 bg-[#141720] border border-[#7c6439] hover:border-vault-brightGold text-vault-brightGold transition-all shadow-lg hover:shadow-[0_0_15px_rgba(223,185,108,0.3)] group rounded-none cursor-pointer {ui.cartHeaderPulsing ? 'scale-105 border-yellow-400' : ''}"
         id="openCartBtn"
         onclick={() => ui.openCart()}
       >
@@ -103,5 +121,23 @@
       </button>
     </div>
   </div>
+
+  <!-- Mobile Collapsible Search Bar -->
+  {#if mobileSearchOpen}
+    <div class="md:hidden px-4 pb-3 pt-1 border-t border-[#3b3221] bg-[#0c0e14]">
+      <div class="relative flex items-center w-full">
+        <svg class="w-4 h-4 text-vault-brightGold shrink-0 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <input
+          class="w-full rounded pl-9 pr-3 py-2 text-xs text-gray-200 placeholder-gray-500 bg-[#12141c] border border-[#5a482b] focus:border-vault-gold focus:outline-none"
+          placeholder="Search miniatures, factions, wargear..."
+          type="text"
+          value={ui.searchQuery}
+          oninput={(e) => ui.setSearch(e.currentTarget.value)}
+        />
+      </div>
+    </div>
+  {/if}
 </header>
 <!-- END: TopHeader -->

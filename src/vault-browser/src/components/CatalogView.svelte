@@ -5,6 +5,8 @@
   import { cart } from '../lib/state/cart.svelte';
   import { ui } from '../lib/state/ui.svelte';
   import VaultBadge from './ui/VaultBadge.svelte';
+  import VaultCard from './ui/VaultCard.svelte';
+  import VaultButton from './ui/VaultButton.svelte';
 
   let miniatures = $state<Miniature[]>(SEED_MINIATURES);
   let factionCounts = $state<FactionCount[]>([]);
@@ -396,19 +398,16 @@
         <p class="text-xs text-gray-400 font-sans mb-4">
           No records match the requested sector, faction or price range filters.
         </p>
-        <button class="vault-btn-gold px-4 py-2 text-xs uppercase" onclick={resetFilters}>
+        <VaultButton variant="gold" size="sm" onclick={resetFilters}>
           Clear Filters
-        </button>
+        </VaultButton>
       </div>
     {:else}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" id="miniaturesCatalog">
         {#each filteredMiniatures as m (m.id)}
-          <div
-            class="vault-card rounded p-3 flex flex-col justify-between group cursor-pointer"
-            role="button"
-            tabindex="0"
+          <VaultCard
+            class="rounded p-3 flex flex-col justify-between group cursor-pointer"
             onclick={() => ui.openProductModal(m)}
-            onkeydown={(e) => { if (e.key === 'Enter') ui.openProductModal(m); }}
           >
             <!-- Image Area with badges -->
             <div class="w-full h-48 bg-[#090b0e] rounded overflow-hidden relative border border-[#232630] flex items-center justify-center group-hover:border-[#5a482b] transition-colors">
@@ -418,7 +417,7 @@
                 src={m.imageUrl}
               />
               <span class="absolute top-2 left-2">
-                <VaultBadge faction={m.faction} />
+                <VaultBadge faction={m.subfaction || m.faction} />
               </span>
               <span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono rounded text-vault-brightGold border border-vault-gold/40">
                 SCALE: {m.scale.split(' ')[0]}
@@ -437,15 +436,17 @@
               </div>
               <div class="pt-2.5 border-t border-[#232630] flex items-center justify-between">
                 <span class="font-mono text-base font-bold text-vault-brightGold">${m.price.toFixed(2)}</span>
-                <button
-                  class="vault-btn-outline px-3 py-1.5 rounded text-[11px] font-semibold flex items-center gap-1.5"
+                <VaultButton
+                  variant="outline"
+                  size="sm"
+                  class="rounded"
                   onclick={(e) => quickAddToCart(e, m)}
                 >
                   Add to Cart
-                </button>
+                </VaultButton>
               </div>
             </div>
-          </div>
+          </VaultCard>
         {/each}
       </div>
     {/if}

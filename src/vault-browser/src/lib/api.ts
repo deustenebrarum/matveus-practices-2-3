@@ -219,6 +219,29 @@ export const SEED_MINIATURES: Miniature[] = [
     wargearOptions: [
       { name: '12 Citadel Acrylics & Synthetic Brush', pointsCost: 0 }
     ]
+  },
+  {
+    id: '88888888-8888-8888-8888-888888888889',
+    name: 'Ork Nob Veteran',
+    description: 'Veteran nobz stomping ahead of the boyz with custom kustom big choppas and ‘eavy armor plates, yelling battle-cries across the trench-lines.',
+    universe: 'Warhammer 40,000',
+    faction: 'Xenos',
+    subfaction: 'Orks',
+    price: 38.00,
+    material: 'Citadel Plastic',
+    scale: '32mm Standard',
+    baseSizeMm: 32,
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnrlmIFE2mo5sBm48HGhY2LA-6ysyzEY9DC-BJrrFYulcQskW4qOXKOA6lGRuIwXJ929YZzscAqJ1WsL7MG23sjQyFAjyWmb-EFN31njtBSQTAOxAFqywvCdAyJoeofVIyCJ3v7_pq3yVPNLtrkXC94wPahcgO91u8XGetrHQlAt13TGBRN-GQUi9uB9AYLl8B04qX0fRQR6bLxSnywo3RMIfG9ailStFjsQAH61flGsJOEA-TXpg',
+    tags: ['Infantry', 'Xenos', 'Orks'],
+    isFeatured: false,
+    points: '65 pts',
+    unitType: 'INFANTRY',
+    stock: 7,
+    inStock: true,
+    wargearOptions: [
+      { name: 'Custom Big Choppa', pointsCost: 0 },
+      { name: 'Power Klaw & Slugga', pointsCost: 5 }
+    ]
   }
 ];
 
@@ -424,7 +447,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<Order> {
   });
 
   const subtotal = orderItems.reduce((acc, curr) => acc + curr.unitPrice * curr.quantity, 0);
-  const bundleDiscount = subtotal * 0.10;
+  const bundleDiscount = subtotal * 0.15;
   const promoDiscount = request.promoCode ? subtotal * 0.10 : 0;
   const total = Math.max(0, subtotal - bundleDiscount - promoDiscount);
 

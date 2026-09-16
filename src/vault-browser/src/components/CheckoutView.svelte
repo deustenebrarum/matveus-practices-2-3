@@ -4,7 +4,8 @@
   import { user } from '../lib/state/user.svelte';
   import { createOrder } from '../lib/api';
   import type { Order } from '../types';
-  import CornerBrackets from './ui/CornerBrackets.svelte';
+  import VaultCard from './ui/VaultCard.svelte';
+  import VaultButton from './ui/VaultButton.svelte';
   import PuritySealBanner from './ui/PuritySealBanner.svelte';
 
   let fullName = $state(user.name);
@@ -42,6 +43,14 @@
       });
 
       createdOrder = order;
+
+      // Update user state active dispatch with newly sanctified order
+      user.activeOrderNumber = order.orderNumber;
+      user.activeOrderDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      user.activeCourier = order.customer.courierService;
+      user.activeDestination = `${order.customer.city}, ${order.customer.shippingAddress}`;
+      user.activeStep = 1;
+
       cart.clearCart();
       ui.notify(`Order #${order.orderNumber} successfully registered and sanctified!`, 'emerald');
     } catch {
@@ -55,14 +64,14 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
   <!-- Breadcrumb -->
   <div class="flex items-center space-x-2 text-[11px] font-cinzel tracking-widest text-[#787265] uppercase mb-6">
-    <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
+    <button type="button" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
     <span>/</span>
     <span class="text-vault-gold">Requisition Protocol Checkout</span>
   </div>
 
   {#if createdOrder}
     <!-- Confirmation Banner Screen -->
-    <CornerBrackets class="vault-card p-8 text-center max-w-2xl mx-auto border-2 border-vault-gold">
+    <VaultCard brackets={true} class="p-8 text-center max-w-2xl mx-auto border-2 border-vault-gold">
       <div class="w-16 h-16 mx-auto rounded-full bg-[#8c1b1b] shadow flex items-center justify-center text-[#ffc6c6] font-serif font-black text-2xl border-2 border-[#b53a3a] mb-4">
         ✠
       </div>
@@ -93,27 +102,29 @@
       </div>
 
       <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <button
-          class="vault-btn-gold px-6 py-2.5 text-xs uppercase font-bold text-black"
+        <VaultButton
+          variant="gold"
+          size="md"
           onclick={() => ui.navigateTo('account')}
         >
           View in Commander Dossier
-        </button>
-        <button
-          class="vault-btn-outline px-6 py-2.5 text-xs uppercase"
+        </VaultButton>
+        <VaultButton
+          variant="outline"
+          size="md"
           onclick={() => ui.navigateTo('catalog')}
         >
           Return to Armory
-        </button>
+        </VaultButton>
       </div>
-    </CornerBrackets>
+    </VaultCard>
   {:else}
     <!-- Checkout Form & Summary Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <!-- Left: Form (7 cols) -->
       <form class="lg:col-span-7 space-y-6" onsubmit={handleSubmitOrder}>
         <!-- Credentials Card -->
-        <CornerBrackets class="vault-card p-6">
+        <VaultCard brackets={true} class="p-6">
           <div class="pb-3 mb-4 border-b border-[#38332b]">
             <h3 class="font-cinzel text-sm font-bold text-vault-brightGold uppercase tracking-widest">
               1. Commander Credentials
@@ -159,10 +170,10 @@
               </div>
             </div>
           </div>
-        </CornerBrackets>
+        </VaultCard>
 
         <!-- Destination Card -->
-        <CornerBrackets class="vault-card p-6">
+        <VaultCard brackets={true} class="p-6">
           <div class="pb-3 mb-4 border-b border-[#38332b]">
             <h3 class="font-cinzel text-sm font-bold text-vault-brightGold uppercase tracking-widest">
               2. Deployment Destination & Logistics
@@ -200,7 +211,7 @@
               </label>
               <select
                 id="courierSelect"
-                class="w-full bg-[#0e1017] border border-[#4d3f26] focus:border-vault-gold text-xs text-white p-2.5 focus:outline-none font-cinzel"
+                class="w-full bg-[#0e1017] border border-[#4d3f26] focus:border-vault-gold text-xs text-white p-2.5 focus:outline-none font-cinzel cursor-pointer"
                 bind:value={courierService}
               >
                 <option value="CDEK Express">CDEK Express (Rapid Sector Transport • 48h)</option>
@@ -209,24 +220,26 @@
               </select>
             </div>
           </div>
-        </CornerBrackets>
+        </VaultCard>
 
         <!-- Submit Button -->
-        <button
+        <VaultButton
           type="submit"
+          variant="gold"
+          size="lg"
           disabled={submitting}
-          class="w-full vault-btn-gold py-4 text-xs tracking-widest uppercase font-black text-black flex items-center justify-center gap-2 shadow-xl hover:shadow-[0_0_20px_rgba(223,185,108,0.4)]"
+          class="w-full shadow-xl hover:shadow-[0_0_20px_rgba(223,185,108,0.4)]"
         >
           <span>{submitting ? 'TRANSMITTING ORDER...' : 'CONFIRM SANCTIFIED REQUISITION'}</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
           </svg>
-        </button>
+        </VaultButton>
       </form>
 
       <!-- Right: Order Summary (5 cols) -->
       <aside class="lg:col-span-5 space-y-6" aria-label="Requisition Manifest Summary">
-        <CornerBrackets class="vault-card p-6">
+        <VaultCard brackets={true} class="p-6">
           <div class="pb-3 mb-4 border-b border-[#38332b] flex items-center justify-between">
             <h3 class="font-cinzel text-sm font-bold text-vault-brightGold uppercase tracking-widest">
               Requisition Manifest
@@ -281,7 +294,7 @@
               <span class="font-mono">${cart.total.toFixed(2)}</span>
             </div>
           </div>
-        </CornerBrackets>
+        </VaultCard>
       </aside>
     </div>
   {/if}

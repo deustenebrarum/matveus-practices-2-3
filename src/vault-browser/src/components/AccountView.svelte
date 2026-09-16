@@ -7,6 +7,9 @@
   import type { Order } from '../types';
   import TimelineStepper from './ui/TimelineStepper.svelte';
   import CornerBrackets from './ui/CornerBrackets.svelte';
+  import VaultCard from './ui/VaultCard.svelte';
+  import VaultButton from './ui/VaultButton.svelte';
+  import VaultModal from './ui/VaultModal.svelte';
 
   let orders = $state<Order[]>([]);
   let orderSort = $state<'newest' | 'delivered' | 'total'>('newest');
@@ -84,9 +87,9 @@
 <section class="border-b border-[#38332b] bg-[#0c0d11]/80 py-4" data-purpose="breadcrumbs-and-title">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center space-x-2 text-[11px] font-cinzel tracking-widest text-[#787265] uppercase mb-1">
-      <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('catalog')}>Home</button>
+      <button type="button" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={() => ui.navigateTo('catalog')}>Home</button>
       <span>/</span>
-      <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
+      <button type="button" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
       <span>/</span>
       <span class="text-vault-gold">Commander Dossier</span>
     </div>
@@ -111,12 +114,7 @@
 <!-- MAIN CONTENT WRAPPER -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8" data-purpose="user-dashboard">
   <!-- ACTIVE DISPATCH & TRACKING CARD (With 4 Golden L-Brackets) -->
-  <section class="vault-card corner-brackets p-6" data-purpose="active-order-tracking">
-    <span class="bracket-tl" aria-hidden="true"></span>
-    <span class="bracket-tr" aria-hidden="true"></span>
-    <span class="bracket-bl" aria-hidden="true"></span>
-    <span class="bracket-br" aria-hidden="true"></span>
-
+  <VaultCard brackets={true} class="p-6" data-purpose="active-order-tracking">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#38332b] gap-3">
       <div>
         <div class="flex items-center space-x-2.5">
@@ -133,15 +131,16 @@
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <button
-          class="btn-vault px-3.5 py-1.5 bg-[#231b12] hover:bg-[#342717] border border-vault-gold text-vault-gold text-xs font-cinzel uppercase tracking-wider flex items-center space-x-1.5"
+        <VaultButton
+          variant="outline"
+          size="sm"
           onclick={() => ui.notify(`Tracking parcel ${user.activeTrackingCipher}: Expected arrival at CDEK dispatch point in 48 hours.`, 'gold')}
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
           </svg>
           <span>Track Parcel</span>
-        </button>
+        </VaultButton>
       </div>
     </div>
 
@@ -168,18 +167,14 @@
         Delivery Destination: <span class="text-[#dfcaa0]">{user.activeDestination}</span>
       </div>
     </div>
-  </section>
+  </VaultCard>
 
   <!-- TWO COLUMN ROW: Commander Credentials + Loyalty Protocol -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <!-- COMMANDER CREDENTIALS CARD (With 4 Golden L-Brackets) -->
-    <section class="lg:col-span-5 vault-card corner-brackets p-6 flex flex-col justify-between" data-purpose="commander-profile-card">
-      <span class="bracket-tl" aria-hidden="true"></span>
-      <span class="bracket-tr" aria-hidden="true"></span>
-      <span class="bracket-bl" aria-hidden="true"></span>
-      <span class="bracket-br" aria-hidden="true"></span>
-
+    <VaultCard brackets={true} class="lg:col-span-5 p-6 flex flex-col justify-between" data-purpose="commander-profile-card">
       <div>
+        <!-- Card Header -->
         <div class="flex items-center justify-between border-b border-[#38332b] pb-3 mb-5">
           <h2 class="font-cinzel font-bold text-sm tracking-[0.2em] text-vault-gold uppercase">Commander Credentials</h2>
           <span class="text-[10px] font-mono text-[#787265]">USER ID: #USR-9482</span>
@@ -193,9 +188,10 @@
           <div class="grid grid-cols-4 gap-2">
             <!-- 1. Imperium -->
             <button
-              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative {user.heraldry === 'Imperium' ? 'bg-[#231c14] border-2 border-vault-gold text-vault-gold shadow-[0_0_8px_rgba(197,155,67,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-vault-gold'}"
+              type="button"
+              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative cursor-pointer {user.heraldry === 'Imperium' ? 'bg-[#231c14] border-2 border-vault-gold text-vault-gold shadow-[0_0_8px_rgba(197,155,67,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-vault-gold'}"
               onclick={() => user.setHeraldry('Imperium')}
-              title="Adeptus Astartes (Imperium)"
+              title="Imperium of Man"
             >
               <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L4 9l2 9 6 3 6-3 2-9-8-7zm0 3.5l5 4.5-1.5 6.5-3.5-1.7V10h-2v4.8L6.5 16.5 5 10l5-4.5z"></path>
@@ -208,7 +204,8 @@
 
             <!-- 2. Chaos -->
             <button
-              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative {user.heraldry === 'Chaos' ? 'bg-[#251010] border-2 border-red-600 text-red-400 shadow-[0_0_8px_rgba(255,100,100,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-red-400'}"
+              type="button"
+              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative cursor-pointer {user.heraldry === 'Chaos' ? 'bg-[#251010] border-2 border-red-600 text-red-400 shadow-[0_0_8px_rgba(255,100,100,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-red-400'}"
               onclick={() => user.setHeraldry('Chaos')}
               title="Forces of Chaos"
             >
@@ -224,7 +221,8 @@
 
             <!-- 3. Necrons -->
             <button
-              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative {user.heraldry === 'Necrons' ? 'bg-[#0f1f18] border-2 border-emerald-500 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-emerald-400'}"
+              type="button"
+              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative cursor-pointer {user.heraldry === 'Necrons' ? 'bg-[#0f1f18] border-2 border-emerald-500 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-emerald-400'}"
               onclick={() => user.setHeraldry('Necrons')}
               title="Necron Dynasty"
             >
@@ -240,7 +238,8 @@
 
             <!-- 4. Orks -->
             <button
-              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative {user.heraldry === 'Orks' ? 'bg-[#231c0f] border-2 border-amber-500 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-amber-400'}"
+              type="button"
+              class="flex flex-col items-center justify-center p-2.5 transition-colors group relative cursor-pointer {user.heraldry === 'Orks' ? 'bg-[#231c0f] border-2 border-amber-500 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-[#12141a] border border-[#38332b] text-[#8e897e] hover:text-amber-400'}"
               onclick={() => user.setHeraldry('Orks')}
               title="Ork WAAAGH!"
             >
@@ -253,6 +252,16 @@
               {/if}
             </button>
           </div>
+
+          <!-- Quick catalog filter link -->
+          <VaultButton
+            variant="outline"
+            size="sm"
+            class="mt-3 w-full text-[10px]"
+            onclick={() => { ui.setSearch(user.heraldry); ui.navigateTo('catalog'); }}
+          >
+            Explore Sanctioned {user.heraldry} Manifest
+          </VaultButton>
         </div>
 
         <!-- Personal Data Fields (With 4 Golden L-Brackets) -->
@@ -274,31 +283,29 @@
 
       <!-- Profile Action Buttons -->
       <div class="flex items-center space-x-3 pt-3 border-t border-[#38332b]">
-        <button
-          class="btn-vault flex-1 py-2 px-3 bg-[#1d1e27] hover:bg-[#282a36] border border-[#5a482b] text-[#dfcaa0] hover:text-white text-xs font-cinzel uppercase tracking-wider"
+        <VaultButton
+          variant="outline"
+          size="sm"
+          class="flex-1"
           onclick={() => ui.notify('Security protocol cipher sent to inquisitor.malcor@imperium.vault', 'gold')}
         >
           Change Password
-        </button>
-        <button
-          class="btn-vault py-2 px-3 bg-[#1e1313] hover:bg-red-950/60 border border-[#7f1d1d] text-red-400 hover:text-red-300 text-xs font-cinzel uppercase tracking-wider flex items-center space-x-1"
+        </VaultButton>
+        <VaultButton
+          variant="crimson"
+          size="sm"
           onclick={() => ui.notify('Comm-link terminated. Re-authentication will be required.', 'crimson')}
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
           </svg>
           <span>Log Out</span>
-        </button>
+        </VaultButton>
       </div>
-    </section>
+    </VaultCard>
 
     <!-- MUNITORUM LOYALTY PROTOCOL CARD (With 4 Golden L-Brackets) -->
-    <section class="lg:col-span-7 vault-card corner-brackets p-6 flex flex-col justify-between" data-purpose="loyalty-program">
-      <span class="bracket-tl" aria-hidden="true"></span>
-      <span class="bracket-tr" aria-hidden="true"></span>
-      <span class="bracket-bl" aria-hidden="true"></span>
-      <span class="bracket-br" aria-hidden="true"></span>
-
+    <VaultCard brackets={true} class="lg:col-span-7 p-6 flex flex-col justify-between" data-purpose="loyalty-program">
       <div>
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-[#38332b] pb-3 mb-5">
@@ -318,25 +325,21 @@
               Expended <strong class="text-vault-gold font-mono font-bold">{user.expendedRubles.toLocaleString()} ₽</strong> / {user.nextRankThreshold.toLocaleString()} ₽ to Next Rank
             </span>
             <span class="text-[11px] font-mono text-emerald-400">
-              Remaining {(user.nextRankThreshold - user.expendedRubles).toLocaleString()} ₽
+              {Math.round((user.expendedRubles / user.nextRankThreshold) * 100)}%
             </span>
           </div>
-
-          <!-- Progress Bar -->
-          <div class="w-full bg-[#1c1d26] h-2.5 border border-[#38332b] overflow-hidden p-0.5">
+          <div class="w-full bg-[#1b1e28] h-2 relative overflow-hidden border border-[#38332b]">
             <div
-              class="bg-gradient-to-r from-vault-gold to-amber-400 h-full shadow-[0_0_8px_rgba(197,155,67,0.7)]"
-              style="width: 69%;"
+              class="bg-gradient-to-r from-amber-600 to-vault-gold h-full shadow-[0_0_8px_rgba(197,155,67,0.7)]"
+              style="width: {(user.expendedRubles / user.nextRankThreshold) * 100}%"
             ></div>
           </div>
-
-          <!-- Rank Stepper -->
-          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-[#25221c] text-center">
-            <!-- Rank 1: Recruit -->
+          <div class="grid grid-cols-3 gap-2 text-center mt-3 pt-3 border-t border-[#25221c]">
+            <!-- Rank 1: Scout -->
             <CornerBrackets class="p-2 bg-[#12141a] border border-[#2d2820]">
-              <div class="text-[10px] font-mono text-[#787265] uppercase">Base Tier</div>
-              <div class="font-cinzel text-xs font-semibold text-[#8e897e] mt-0.5">Recruit (3%)</div>
-              <div class="text-[9px] text-[#5c574c] font-mono mt-0.5">up to 20,000 ₽</div>
+              <div class="text-[10px] font-mono text-[#787265] uppercase">Novice Rank</div>
+              <div class="font-cinzel text-xs font-semibold text-[#a7a296] mt-0.5">Scout (5%)</div>
+              <div class="text-[9px] text-[#787265] font-mono mt-0.5">from 5,000 ₽</div>
             </CornerBrackets>
 
             <!-- Rank 2: Veteran (Active) -->
@@ -375,68 +378,66 @@
                   <div class="text-[10px] text-[#787265] font-mono">Valid until Nov 30, 2026</div>
                 </div>
               </div>
-              <button
-                class="btn-vault px-3 py-1 bg-[#171922] hover:bg-[#25221a] border border-[#5a482b] text-vault-gold text-[10px] font-cinzel uppercase tracking-wider"
+              <VaultButton
+                variant="outline"
+                size="sm"
                 onclick={() => copyPromo('WARP-TITHE-10')}
               >
                 Copy Code
-              </button>
+              </VaultButton>
             </CornerBrackets>
 
             <!-- Promo 2 -->
             <CornerBrackets class="flex items-center justify-between p-2.5 bg-[#0f1118] border border-[#38332b]">
               <div class="flex items-center space-x-3">
                 <span class="px-2 py-1 bg-[#231b12] border border-vault-gold/60 text-vault-gold font-mono font-bold text-xs tracking-wider">
-                  FORGE-DISPATCH
+                  TERRA10
                 </span>
                 <div>
-                  <div class="text-xs text-[#f2e6cb] font-sans">Free courier delivery</div>
-                  <div class="text-[10px] text-[#787265] font-mono">Valid until Oct 15, 2026</div>
+                  <div class="text-xs text-[#f2e6cb] font-sans">10% Imperial Tithe Relief</div>
+                  <div class="text-[10px] text-[#787265] font-mono">Valid for all Standard Dispatches</div>
                 </div>
               </div>
-              <button
-                class="btn-vault px-3 py-1 bg-[#171922] hover:bg-[#25221a] border border-[#5a482b] text-vault-gold text-[10px] font-cinzel uppercase tracking-wider"
-                onclick={() => copyPromo('FORGE-DISPATCH')}
+              <VaultButton
+                variant="outline"
+                size="sm"
+                onclick={() => copyPromo('TERRA10')}
               >
                 Copy Code
-              </button>
+              </VaultButton>
             </CornerBrackets>
 
             <!-- Promo 3 -->
             <CornerBrackets class="flex items-center justify-between p-2.5 bg-[#0f1118] border border-[#38332b]">
               <div class="flex items-center space-x-3">
                 <span class="px-2 py-1 bg-[#231b12] border border-vault-gold/60 text-vault-gold font-mono font-bold text-xs tracking-wider">
-                  PRIMARIS-GIFT
+                  EMPEROR20
                 </span>
                 <div>
-                  <div class="text-xs text-[#f2e6cb] font-sans">500 ₽ off Infantry squads</div>
-                  <div class="text-[10px] text-[#787265] font-mono">Valid until Dec 01, 2026</div>
+                  <div class="text-xs text-[#f2e6cb] font-sans">20% Golden Throne Benediction</div>
+                  <div class="text-[10px] text-[#787265] font-mono">Applies to Orders &gt; $100</div>
                 </div>
               </div>
-              <button
-                class="btn-vault px-3 py-1 bg-[#171922] hover:bg-[#25221a] border border-[#5a482b] text-vault-gold text-[10px] font-cinzel uppercase tracking-wider"
-                onclick={() => copyPromo('PRIMARIS-GIFT')}
+              <VaultButton
+                variant="outline"
+                size="sm"
+                onclick={() => copyPromo('EMPEROR20')}
               >
                 Copy Code
-              </button>
+              </VaultButton>
             </CornerBrackets>
           </div>
         </div>
       </div>
-    </section>
+    </VaultCard>
   </div>
 
-  <!-- ORDER HISTORY ARCHIVES CARD (With 4 Golden L-Brackets) -->
-  <section class="vault-card corner-brackets p-6" data-purpose="orders-archive">
-    <span class="bracket-tl" aria-hidden="true"></span>
-    <span class="bracket-tr" aria-hidden="true"></span>
-    <span class="bracket-bl" aria-hidden="true"></span>
-    <span class="bracket-br" aria-hidden="true"></span>
-
+  <!-- ORDER HISTORY ARCHIVE (With 4 Golden L-Brackets) -->
+  <VaultCard brackets={true} class="p-6" data-purpose="order-history-ledger">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#38332b] mb-5 gap-3">
       <div>
         <h2 class="font-cinzel font-bold text-base text-[#f2e6cb] tracking-wider uppercase">
-          Order History & Archive
+          Consignment Archive & Order History
         </h2>
         <p class="text-xs text-[#8e897e] font-sans">Complete ledger of past orders, delivery statuses, and invoices</p>
       </div>
@@ -444,7 +445,7 @@
         <label class="text-[11px] text-[#8e897e] font-cinzel uppercase" for="orderSortSelect">Sort by:</label>
         <select
           id="orderSortSelect"
-          class="bg-[#101217] border border-[#5a482b] text-xs text-[#dfcaa0] font-cinzel py-1 px-3 focus:outline-none focus:border-vault-gold"
+          class="bg-[#101217] border border-[#5a482b] text-xs text-[#dfcaa0] font-cinzel py-1 px-3 focus:outline-none focus:border-vault-gold cursor-pointer"
           bind:value={orderSort}
         >
           <option value="newest">Date (Newest First)</option>
@@ -497,20 +498,23 @@
 
             <!-- Buttons -->
             <div class="flex items-center space-x-2 shrink-0">
-              <button
-                class="btn-vault px-3 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-cinzel uppercase text-[#c59b43]"
+              <VaultButton
+                variant="dark"
+                size="sm"
                 onclick={() => ui.notify(`Manifest for order #${ord.orderNumber}: Destination ${ord.customer.shippingAddress}, ${ord.customer.city}`, 'gold')}
               >
                 Details
-              </button>
-              <button
-                class="btn-vault px-3 py-1.5 bg-[#251d14] hover:bg-vault-gold hover:text-black border border-vault-gold text-xs font-cinzel font-semibold uppercase text-vault-gold transition-colors"
+              </VaultButton>
+              <VaultButton
+                variant="gold"
+                size="sm"
                 onclick={() => handleRepeatOrder(ord)}
               >
                 Repeat Order
-              </button>
-              <button
-                class="btn-vault px-2.5 py-1.5 bg-[#161822] hover:bg-[#25221c] border border-[#4a3e28] text-xs font-cinzel text-[#a7a296] hover:text-[#dfcaa0]"
+              </VaultButton>
+              <VaultButton
+                variant="outline"
+                size="sm"
                 title="Download Invoice (PDF)"
                 onclick={() => ui.notify(`Inquisitorial invoice PDF for #${ord.orderNumber} generated.`, 'emerald')}
               >
@@ -518,21 +522,16 @@
                   <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                 </svg>
                 <span>PDF</span>
-              </button>
+              </VaultButton>
             </div>
           </div>
         </CornerBrackets>
       {/each}
     </div>
-  </section>
+  </VaultCard>
 
   <!-- SAVED DELIVERY ADDRESSES (With 4 Golden L-Brackets on All Cards) -->
-  <section class="vault-card corner-brackets p-6" data-purpose="saved-delivery-addresses">
-    <span class="bracket-tl" aria-hidden="true"></span>
-    <span class="bracket-tr" aria-hidden="true"></span>
-    <span class="bracket-bl" aria-hidden="true"></span>
-    <span class="bracket-br" aria-hidden="true"></span>
-
+  <VaultCard brackets={true} class="p-6" data-purpose="saved-delivery-addresses">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#38332b] mb-5 gap-3">
       <div>
         <h2 class="font-cinzel font-bold text-base text-[#f2e6cb] tracking-wider uppercase">
@@ -540,15 +539,16 @@
         </h2>
         <p class="text-xs text-[#8e897e] font-sans">Registered pick-up points (PVZ) and courier addresses for rapid checkout</p>
       </div>
-      <button
-        class="btn-vault px-3.5 py-2 bg-[#251d14] hover:bg-vault-gold hover:text-[#0a0b0e] border border-vault-gold text-vault-gold text-xs font-cinzel uppercase font-semibold tracking-wider flex items-center space-x-1.5 self-start sm:self-auto transition-colors"
+      <VaultButton
+        variant="gold"
+        size="sm"
         onclick={() => { newAddressModalOpen = true; }}
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
         <span>+ Add New Address</span>
-      </button>
+      </VaultButton>
     </div>
 
     <!-- Grid of Saved Addresses -->
@@ -592,7 +592,8 @@
             </label>
             <div class="flex items-center space-x-2">
               <button
-                class="text-xs text-red-400 hover:text-red-300 transition-colors font-cinzel uppercase"
+                type="button"
+                class="text-xs text-red-400 hover:text-red-300 transition-colors font-cinzel uppercase cursor-pointer"
                 title="Delete Address"
                 onclick={() => user.deleteAddress(addr.id)}
               >
@@ -603,53 +604,54 @@
         </CornerBrackets>
       {/each}
     </div>
-  </section>
+  </VaultCard>
 
-  <!-- Inline New Address Dialog -->
-  {#if newAddressModalOpen}
-    <CornerBrackets class="vault-card p-6 border-2 border-vault-gold">
-      <div class="flex items-center justify-between pb-3 border-b border-[#38332b] mb-4">
-        <h3 class="font-cinzel font-bold text-sm text-vault-brightGold uppercase tracking-wider">
-          Register New Imperial Delivery Coordinates
-        </h3>
-        <button class="text-gray-400 hover:text-white" onclick={() => { newAddressModalOpen = false; }}>✕</button>
+  <!-- Reusable Modal Dialog for Registering Delivery Coordinates -->
+  <VaultModal
+    open={newAddressModalOpen}
+    title="Register New Imperial Delivery Coordinates"
+    maxWidth="max-w-2xl"
+    onclose={() => { newAddressModalOpen = false; }}
+  >
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-[11px] font-cinzel text-gray-300 uppercase mb-1" for="newCityInput">City / Hive Sector</label>
+        <input
+          id="newCityInput"
+          class="w-full bg-[#0e1017] border border-[#5a482b] text-xs p-2 text-white focus:border-vault-gold focus:outline-none"
+          placeholder="e.g. Moscow / Sector Prime"
+          bind:value={newCity}
+        />
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-[11px] font-cinzel text-gray-300 uppercase mb-1" for="newCityInput">City / Hive Sector</label>
-          <input
-            id="newCityInput"
-            class="w-full bg-[#0e1017] border border-[#5a482b] text-xs p-2 text-white focus:border-vault-gold"
-            placeholder="e.g. Moscow / Sector Prime"
-            bind:value={newCity}
-          />
-        </div>
-        <div>
-          <label class="block text-[11px] font-cinzel text-gray-300 uppercase mb-1" for="newLine1Input">Address / Hub Code</label>
-          <input
-            id="newLine1Input"
-            class="w-full bg-[#0e1017] border border-[#5a482b] text-xs p-2 text-white focus:border-vault-gold"
-            placeholder="e.g. PVZ #204, Prospekt Mira 14"
-            bind:value={newLine1}
-          />
-        </div>
-        <div>
-          <label class="block text-[11px] font-cinzel text-gray-300 uppercase mb-1" for="newTypeSelect">Service Type</label>
-          <select
-            id="newTypeSelect"
-            class="w-full bg-[#0e1017] border border-[#5a482b] text-xs p-2 text-white focus:border-vault-gold"
-            bind:value={newType}
-          >
-            <option value="PVZ">CDEK PVZ (Self Pickup)</option>
-            <option value="Courier">Courier Doorstep Delivery</option>
-            <option value="Postal">Russian Post Relay</option>
-          </select>
-        </div>
+      <div>
+        <label class="block text-[11px] font-cinzel text-gray-300 uppercase mb-1" for="newLine1Input">Address / Hub Code</label>
+        <input
+          id="newLine1Input"
+          class="w-full bg-[#0e1017] border border-[#5a482b] text-xs p-2 text-white focus:border-vault-gold focus:outline-none"
+          placeholder="e.g. PVZ #204, Prospekt Mira 14"
+          bind:value={newLine1}
+        />
       </div>
-      <div class="flex justify-end gap-3 mt-4 pt-3 border-t border-[#38332b]">
-        <button class="vault-btn-outline px-4 py-1.5 text-xs uppercase" onclick={() => { newAddressModalOpen = false; }}>Cancel</button>
-        <button class="vault-btn-gold px-4 py-1.5 text-xs uppercase font-bold text-black" onclick={handleAddAddress}>Save Address</button>
+      <div>
+        <label class="block text-[11px] font-cinzel text-gray-300 uppercase mb-1" for="newTypeSelect">Service Type</label>
+        <select
+          id="newTypeSelect"
+          class="w-full bg-[#0e1017] border border-[#5a482b] text-xs p-2 text-white focus:border-vault-gold focus:outline-none cursor-pointer"
+          bind:value={newType}
+        >
+          <option value="PVZ">CDEK PVZ (Self Pickup)</option>
+          <option value="Courier">Courier Doorstep Delivery</option>
+          <option value="Postal">Russian Post Relay</option>
+        </select>
       </div>
-    </CornerBrackets>
-  {/if}
+    </div>
+    <div class="flex justify-end gap-3 mt-6 pt-3 border-t border-[#38332b]">
+      <VaultButton variant="outline" size="sm" onclick={() => { newAddressModalOpen = false; }}>
+        Cancel
+      </VaultButton>
+      <VaultButton variant="gold" size="sm" onclick={handleAddAddress}>
+        Save Address
+      </VaultButton>
+    </div>
+  </VaultModal>
 </main>

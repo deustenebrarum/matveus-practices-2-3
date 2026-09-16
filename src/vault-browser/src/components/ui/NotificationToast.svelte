@@ -9,7 +9,7 @@
   >
     {#each ui.notifications as notif (notif.id)}
       <div
-        class="pointer-events-auto bg-[#12141c] border-2 {notif.type === 'emerald' ? 'border-emerald-600' : notif.type === 'crimson' ? 'border-red-600' : 'border-vault-gold'} p-3.5 shadow-[0_0_20px_rgba(0,0,0,0.9)] flex items-center justify-between gap-3 animate-bounce"
+        class="pointer-events-auto bg-[#12141c] border-2 {notif.type === 'emerald' ? 'border-emerald-600' : notif.type === 'crimson' ? 'border-red-600' : 'border-vault-gold'} p-3.5 shadow-[0_0_20px_rgba(0,0,0,0.9)] flex items-center justify-between gap-3 transition-all duration-300"
         role="alert"
       >
         <div class="flex items-center gap-2.5 text-xs">
@@ -21,8 +21,10 @@
           </span>
         </div>
         <button
-          class="text-gray-400 hover:text-white p-1 text-xs shrink-0"
+          type="button"
+          class="text-gray-400 hover:text-white p-1 text-xs shrink-0 cursor-pointer"
           onclick={() => ui.dismissNotification(notif.id)}
+          aria-label="Dismiss notification"
         >
           ✕
         </button>

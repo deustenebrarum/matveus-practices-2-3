@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import CornerBrackets from './CornerBrackets.svelte';
 
   interface Props {
     brackets?: boolean;
@@ -17,26 +16,19 @@
   }: Props = $props();
 </script>
 
-{#if brackets}
-  <div
-    class="vault-card p-4 {className}"
-    role={onclick ? 'button' : undefined}
-    tabindex={onclick ? 0 : undefined}
-    {onclick}
-    onkeydown={onclick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onclick(e as unknown as MouseEvent); } : undefined}
-  >
-    <CornerBrackets>
-      {@render children?.()}
-    </CornerBrackets>
-  </div>
-{:else}
-  <div
-    class="vault-card p-4 {className}"
-    role={onclick ? 'button' : undefined}
-    tabindex={onclick ? 0 : undefined}
-    {onclick}
-    onkeydown={onclick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onclick(e as unknown as MouseEvent); } : undefined}
-  >
-    {@render children?.()}
-  </div>
-{/if}
+<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_static_element_interactions -->
+<div
+  class="vault-card {brackets ? 'corner-brackets' : ''} {className}"
+  role={onclick ? 'button' : undefined}
+  tabindex={onclick ? 0 : undefined}
+  {onclick}
+  onkeydown={onclick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onclick(e as unknown as MouseEvent); } : undefined}
+>
+  {#if brackets}
+    <span class="bracket-tl" aria-hidden="true"></span>
+    <span class="bracket-tr" aria-hidden="true"></span>
+    <span class="bracket-bl" aria-hidden="true"></span>
+    <span class="bracket-br" aria-hidden="true"></span>
+  {/if}
+  {@render children?.()}
+</div>

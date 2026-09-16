@@ -3,7 +3,8 @@
   import type { InventoryItem } from '../types';
   import { fetchInventory, adjustInventory } from '../lib/api';
   import { ui } from '../lib/state/ui.svelte';
-  import CornerBrackets from './ui/CornerBrackets.svelte';
+  import VaultCard from './ui/VaultCard.svelte';
+  import VaultButton from './ui/VaultButton.svelte';
 
   let inventory = $state<InventoryItem[]>([]);
   let loading = $state<boolean>(true);
@@ -44,7 +45,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
   <!-- Breadcrumb -->
   <div class="flex items-center space-x-2 text-[11px] font-cinzel tracking-widest text-[#787265] uppercase mb-6">
-    <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
+    <button type="button" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
     <span>/</span>
     <span class="text-vault-gold">Munitorum Armory Logistics & Inventory</span>
   </div>
@@ -64,12 +65,13 @@
         placeholder="Filter stock by name..."
         bind:value={filterQuery}
       />
-      <button
-        class="vault-btn-outline px-3.5 py-1.5 text-xs uppercase"
+      <VaultButton
+        variant="outline"
+        size="sm"
         onclick={reloadInventory}
       >
         Sync
-      </button>
+      </VaultButton>
     </div>
   </div>
 
@@ -78,7 +80,7 @@
       Scanning Munitorum storage crypts...
     </div>
   {:else}
-    <CornerBrackets class="vault-card p-4 overflow-x-auto">
+    <VaultCard brackets={true} class="p-4 overflow-x-auto">
       <table class="w-full text-left text-xs border-collapse">
         <thead>
           <tr class="border-b border-[#38332b] text-[11px] font-cinzel text-vault-brightGold uppercase tracking-wider">
@@ -109,28 +111,32 @@
               <td class="py-3.5 px-3 text-right">
                 <div class="inline-flex items-center gap-1">
                   <button
-                    class="px-2 py-1 bg-[#1e1313] hover:bg-red-950 border border-red-900 text-red-300 rounded-none font-mono text-[11px]"
+                    type="button"
+                    class="px-2 py-1 bg-[#1e1313] hover:bg-red-950 border border-red-900 text-red-300 rounded-none font-mono text-[11px] cursor-pointer"
                     onclick={() => handleAdjust(item.id, -5)}
                     title="Deduct 5"
                   >
                     -5
                   </button>
                   <button
-                    class="px-2 py-1 bg-[#1e1313] hover:bg-red-950 border border-red-900 text-red-300 rounded-none font-mono text-[11px]"
+                    type="button"
+                    class="px-2 py-1 bg-[#1e1313] hover:bg-red-950 border border-red-900 text-red-300 rounded-none font-mono text-[11px] cursor-pointer"
                     onclick={() => handleAdjust(item.id, -1)}
                     title="Deduct 1"
                   >
                     -1
                   </button>
                   <button
-                    class="px-2 py-1 bg-[#131d16] hover:bg-emerald-950 border border-emerald-900 text-emerald-300 rounded-none font-mono text-[11px]"
+                    type="button"
+                    class="px-2 py-1 bg-[#131d16] hover:bg-emerald-950 border border-emerald-900 text-emerald-300 rounded-none font-mono text-[11px] cursor-pointer"
                     onclick={() => handleAdjust(item.id, 1)}
                     title="Add 1"
                   >
                     +1
                   </button>
                   <button
-                    class="px-2 py-1 bg-[#131d16] hover:bg-emerald-950 border border-emerald-900 text-emerald-300 rounded-none font-mono text-[11px]"
+                    type="button"
+                    class="px-2 py-1 bg-[#131d16] hover:bg-emerald-950 border border-emerald-900 text-emerald-300 rounded-none font-mono text-[11px] cursor-pointer"
                     onclick={() => handleAdjust(item.id, 5)}
                     title="Add 5"
                   >
@@ -142,6 +148,6 @@
           {/each}
         </tbody>
       </table>
-    </CornerBrackets>
+    </VaultCard>
   {/if}
 </div>

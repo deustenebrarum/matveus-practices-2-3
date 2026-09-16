@@ -2,6 +2,7 @@
   import { cart } from '../lib/state/cart.svelte';
   import { ui } from '../lib/state/ui.svelte';
   import PuritySealBanner from './ui/PuritySealBanner.svelte';
+  import VaultButton from './ui/VaultButton.svelte';
 
   let promoInput = $state('');
 
@@ -24,6 +25,8 @@
   }
 </script>
 
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape' && ui.cartDrawerOpen) ui.closeCart(); }} />
+
 <!-- Drawer Backdrop -->
 {#if ui.cartDrawerOpen}
   <div
@@ -31,7 +34,6 @@
     id="cartBackdrop"
     role="presentation"
     onclick={() => ui.closeCart()}
-    onkeydown={(e) => { if (e.key === 'Escape') ui.closeCart(); }}
   ></div>
 {/if}
 
@@ -55,7 +57,7 @@
     <!-- Close Drawer Button -->
     <button
       aria-label="Close cart"
-      class="w-8 h-8 rounded border border-[#52442c] text-vault-gold hover:text-white hover:border-vault-brightGold flex items-center justify-center transition-colors text-sm"
+      class="w-8 h-8 rounded border border-[#52442c] text-vault-gold hover:text-white hover:border-vault-brightGold flex items-center justify-center transition-colors text-sm cursor-pointer"
       id="closeCartBtn"
       onclick={() => ui.closeCart()}
     >
@@ -74,12 +76,13 @@
         <p class="text-xs text-gray-500 font-sans mb-4">
           No wargear or miniatures have been designated for requisition yet.
         </p>
-        <button
-          class="vault-btn-outline px-4 py-2 text-xs uppercase"
+        <VaultButton
+          variant="outline"
+          size="sm"
           onclick={() => { ui.closeCart(); ui.navigateTo('catalog'); }}
         >
           Explore Catalog
-        </button>
+        </VaultButton>
       </div>
     {:else}
       {#each cart.items as item (item.id + (item.wargear || ''))}
@@ -97,7 +100,7 @@
                 {item.name}
               </h4>
               <button
-                class="text-gray-500 hover:text-red-400 text-xs px-1"
+                class="text-gray-500 hover:text-red-400 text-xs px-1 cursor-pointer"
                 aria-label="Remove item"
                 onclick={() => cart.removeItem(item.id, item.wargear)}
               >
@@ -110,7 +113,7 @@
             <div class="flex items-center justify-between mt-2">
               <div class="flex items-center bg-[#0e1017] border border-[#3d331f] rounded text-[11px]">
                 <button
-                  class="px-2 py-0.5 text-gray-400 hover:text-white"
+                  class="px-2 py-0.5 text-gray-400 hover:text-white cursor-pointer"
                   aria-label="Decrease quantity"
                   onclick={() => cart.updateQuantity(item.id, -1, item.wargear)}
                 >
@@ -120,7 +123,7 @@
                   {item.quantity}
                 </span>
                 <button
-                  class="px-2 py-0.5 text-gray-400 hover:text-white"
+                  class="px-2 py-0.5 text-gray-400 hover:text-white cursor-pointer"
                   aria-label="Increase quantity"
                   onclick={() => cart.updateQuantity(item.id, 1, item.wargear)}
                 >
@@ -158,12 +161,13 @@
         bind:value={promoInput}
         onkeydown={(e) => { if (e.key === 'Enter') handleApplyPromo(); }}
       />
-      <button
-        class="vault-btn-outline px-4 py-2 text-xs font-bold uppercase rounded"
+      <VaultButton
+        variant="outline"
+        size="sm"
         onclick={handleApplyPromo}
       >
         Apply
-      </button>
+      </VaultButton>
     </div>
 
     {#if cart.promoMessage}
@@ -208,15 +212,17 @@
     </div>
 
     <!-- Proceed Checkout CTA -->
-    <button
-      class="w-full vault-btn-gold py-3 text-xs tracking-widest uppercase font-black text-black flex items-center justify-center gap-2 shadow-lg hover:shadow-[0_0_20px_rgba(223,185,108,0.4)]"
+    <VaultButton
+      variant="gold"
+      size="lg"
+      class="w-full shadow-lg hover:shadow-[0_0_20px_rgba(223,185,108,0.4)]"
       onclick={handleCheckout}
     >
       <span>PROCEED TO CHECKOUT</span>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
       </svg>
-    </button>
+    </VaultButton>
     <p class="text-[9px] text-center text-gray-500 uppercase tracking-widest font-cinzel">
       Blessed by the Administratum • Priority Imperial Shipping
     </p>

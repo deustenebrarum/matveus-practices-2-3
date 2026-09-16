@@ -35,17 +35,18 @@
     onclick={onclose}
     onkeydown={(e) => { if (e.key === 'Escape') onclose(); }}
   >
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div
       class="vault-frame-ornate bg-[#12141c] w-full {maxWidth} rounded-sm p-6 relative max-h-[92vh] overflow-y-auto text-left shadow-2xl"
       role="document"
-      tabindex="0"
+      tabindex="-1"
       onclick={(e) => e.stopPropagation()}
       onkeydown={(e) => e.stopPropagation()}
     >
       <!-- Close Button -->
       <button
         aria-label="Close modal"
-        class="absolute top-3 right-3 text-vault-gold hover:text-white transition-colors p-1 z-30"
+        class="absolute top-3 right-3 text-vault-gold hover:text-white transition-colors p-1 z-30 cursor-pointer"
         onclick={onclose}
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
