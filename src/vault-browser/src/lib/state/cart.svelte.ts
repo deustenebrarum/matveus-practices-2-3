@@ -10,28 +10,7 @@ function loadInitialItems(): CartItem[] {
   } catch {
     // ignore
   }
-  // Default items matching design/index.html
-  return [
-    {
-      id: '11111111-1111-1111-1111-111111111111',
-      name: 'Space Marine Tactical Squad',
-      price: 39.90,
-      quantity: 1,
-      faction: 'Imperium',
-      scale: '32mm Standard',
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCmix_3nOtb3lC5MIHp88FpjqxEsJ1lCbqHIHbh1yhPCKYEe7RRXPOVUi7N6HfkyHmKch2rC-zxhV39xfKkA0tyy-ZbFEs21MX5AvOnV9dg0hD62r9Nwx11V5YB34S-IY-7d6JEX6H3An4op2nvgLDrweVqkVgyVCvud4JRB36_yTC-FZj-uw38tu_TbUlYQoqB4rx38bIV7EA4jStj0BhD4Q5C0GUCL_-xsu600y_9pNYBJF2hSrA'
-    },
-    {
-      id: '99999999-9999-9999-9999-999999999999',
-      name: 'Citadel Base Paint Set',
-      price: 60.00,
-      quantity: 1,
-      faction: 'Imperium',
-      scale: 'Standard Pots',
-      isStarterSet: true,
-      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC_ACLw9p31Jh1kwE_qI64Yc9_I70cB16fQq0swI-7Oz_GLOXiblkUrOxkDXZxO2jkSnqTEGzKERsfMRfOOp6sNAmKM6iJReJBZraSFnnf-F2-hS3Ik6emRbetv5M7zRHE8FyXWUZX4K8MDfDAnZDPufdsmlpv-POIK4ufkvmGqlgwu_A4nnAL5VVdZCv4JlQXlhyAdWr5Ql_VK5RA4KqfJxRcbGKapdNBPGC1q49SpGoJoVjwQJSU'
-    }
-  ];
+  return [];
 }
 
 class CartState {

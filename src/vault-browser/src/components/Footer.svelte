@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ui } from '../lib/state/ui.svelte';
+  import { user } from '../lib/state/user.svelte';
 </script>
 
 <!-- BEGIN: SiteFooter matching design/account.html & design/index.html -->
@@ -19,10 +20,12 @@
       </div>
     </div>
     <div class="flex items-center space-x-6 text-[11px] font-cinzel uppercase tracking-wider text-[#a7a296]">
-      <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
-      <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('account')}>Dossier</button>
-      <button class="hover:text-vault-gold transition-colors" onclick={() => ui.navigateTo('admin')}>Inventory</button>
-      <button class="hover:text-vault-gold transition-colors" onclick={() => ui.notify('Imperial astropathic relays are operational.', 'gold')}>Support</button>
+      <a href="/" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={(e) => { e.preventDefault(); ui.navigateTo('catalog'); }}>Catalog</a>
+      <a href="/account" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={(e) => { e.preventDefault(); ui.navigateTo('account'); }}>Account</a>
+      {#if user.isStaff}
+        <a href="/admin" class="hover:text-vault-gold transition-colors text-gray-500 cursor-pointer" onclick={(e) => { e.preventDefault(); ui.navigateTo('admin'); }}>Armory [Staff]</a>
+      {/if}
+      <button type="button" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={() => ui.notify('Imperial astropathic relays are operational.', 'gold')}>Support</button>
     </div>
   </div>
 </footer>

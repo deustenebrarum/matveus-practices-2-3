@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Miniature, FactionCount } from '../types';
-  import { fetchMiniatures, fetchFactions, SEED_MINIATURES } from '../lib/api';
+  import { fetchMiniatures, fetchFactions } from '../lib/api';
   import { cart } from '../lib/state/cart.svelte';
   import { ui } from '../lib/state/ui.svelte';
   import VaultBadge from './ui/VaultBadge.svelte';
   import VaultCard from './ui/VaultCard.svelte';
   import VaultButton from './ui/VaultButton.svelte';
 
-  let miniatures = $state<Miniature[]>(SEED_MINIATURES);
+  let miniatures = $state<Miniature[]>([]);
   let factionCounts = $state<FactionCount[]>([]);
   let loading = $state<boolean>(true);
 
@@ -20,18 +20,170 @@
   let inStockOnly = $state<boolean>(false);
   let sortBy = $state<'featured' | 'price_asc' | 'price_desc' | 'name'>('featured');
 
-  onMount(async () => {
-    try {
-      const [items, factions] = await Promise.all([
-        fetchMiniatures(),
-        fetchFactions()
-      ]);
-      miniatures = items;
-      factionCounts = factions;
-    } catch {
-      // Fallback already assigned
-    } finally {
-      loading = false;
+  let isSyncingFromUrl = false;
+  let syncTimeout: ReturnType<typeof setTimeout> | null = null;
+  let mounted = $state<boolean>(false);
+
+  function loadFiltersFromUrl() {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    isSyncingFromUrl = true;
+
+    // Search query
+    if (params.has('q')) {
+      ui.searchQuery = params.get('q') || '';
+    }
+
+    // Universe / Sector
+    if (params.has('universe')) {
+      ui.selectedUniverse = params.get('universe') || '';
+    }
+
+    // Faction(s)
+    if (params.has('faction')) {
+      selectedFactions = params.get('faction')!.split(',').map(s => s.trim()).filter(Boolean);
+    } else if (params.has('factions')) {
+      selectedFactions = params.get('factions')!.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    // Material(s)
+    if (params.has('material')) {
+      selectedMaterials = params.get('material')!.split(',').map(s => s.trim()).filter(Boolean);
+    } else if (params.has('materials')) {
+      selectedMaterials = params.get('materials')!.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    // Scale(s)
+    if (params.has('scale')) {
+      selectedScales = params.get('scale')!.split(',').map(s => s.trim()).filter(Boolean);
+    } else if (params.has('scales')) {
+      selectedScales = params.get('scales')!.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    // Max Price
+    if (params.has('maxPrice')) {
+      const p = Number(params.get('maxPrice'));
+      if (!isNaN(p) && p >= 10 && p <= 250) {
+        maxPrice = p;
+      }
+    }
+
+    // In Stock Only
+    if (params.has('inStock')) {
+      const val = params.get('inStock');
+      inStockOnly = val === 'true' || val === '1';
+    }
+
+    // Sort By
+    if (params.has('sort')) {
+      const s = params.get('sort');
+      if (s === 'featured' || s === 'price_asc' || s === 'price_desc' || s === 'name') {
+        sortBy = s;
+      }
+    }
+
+    setTimeout(() => {
+      isSyncingFromUrl = false;
+    }, 50);
+  }
+
+  function syncFiltersToUrl(immediate = false) {
+    if (typeof window === 'undefined' || ui.activeView !== 'catalog' || isSyncingFromUrl) return;
+
+    if (syncTimeout) {
+      clearTimeout(syncTimeout);
+      syncTimeout = null;
+    }
+
+    const performSync = () => {
+      const params = new URLSearchParams();
+
+      if (ui.searchQuery.trim()) {
+        params.set('q', ui.searchQuery.trim());
+      }
+      if (ui.selectedUniverse.trim()) {
+        params.set('universe', ui.selectedUniverse.trim());
+      }
+      if (selectedFactions.length > 0) {
+        params.set('faction', selectedFactions.join(','));
+      }
+      if (selectedMaterials.length > 0) {
+        params.set('material', selectedMaterials.join(','));
+      }
+      if (selectedScales.length > 0) {
+        params.set('scale', selectedScales.join(','));
+      }
+      if (maxPrice < 250) {
+        params.set('maxPrice', maxPrice.toString());
+      }
+      if (inStockOnly) {
+        params.set('inStock', 'true');
+      }
+      if (sortBy !== 'featured') {
+        params.set('sort', sortBy);
+      }
+
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+      const currentFullUrl = window.location.pathname + window.location.search;
+      const targetFullUrl = (window.location.pathname.replace(/\/$/, '') || '/') + queryString;
+
+      if (currentFullUrl !== targetFullUrl) {
+        window.history.replaceState({ view: 'catalog' }, '', targetFullUrl);
+      }
+    };
+
+    if (immediate) {
+      performSync();
+    } else {
+      syncTimeout = setTimeout(performSync, 120);
+    }
+  }
+
+  onMount(() => {
+    loadFiltersFromUrl();
+    mounted = true;
+
+    const handlePopState = () => {
+      if (ui.activeView === 'catalog') {
+        loadFiltersFromUrl();
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    (async () => {
+      try {
+        const [res, factions] = await Promise.all([
+          fetchMiniatures(),
+          fetchFactions()
+        ]);
+        miniatures = res.items;
+        factionCounts = factions;
+      } catch {
+        ui.notify('Failed to load miniatures from backend catalog.', 'crimson');
+      } finally {
+        loading = false;
+      }
+    })();
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (syncTimeout) clearTimeout(syncTimeout);
+    };
+  });
+
+  $effect(() => {
+    // Track reactive dependencies
+    const _q = ui.searchQuery;
+    const _u = ui.selectedUniverse;
+    const _f = selectedFactions.join(',');
+    const _m = selectedMaterials.join(',');
+    const _s = selectedScales.join(',');
+    const _p = maxPrice;
+    const _st = inStockOnly;
+    const _sb = sortBy;
+
+    if (mounted && !isSyncingFromUrl) {
+      syncFiltersToUrl(false);
     }
   });
 
@@ -41,8 +193,10 @@
     selectedScales = [];
     maxPrice = 250;
     inStockOnly = false;
+    sortBy = 'featured';
     ui.searchQuery = '';
     ui.selectedUniverse = '';
+    syncFiltersToUrl(true);
   }
 
   function toggleFaction(f: string) {

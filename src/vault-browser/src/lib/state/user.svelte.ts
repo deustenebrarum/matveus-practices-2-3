@@ -7,65 +7,129 @@ export interface SavedAddress {
   isPrimary: boolean;
 }
 
-export interface LoyaltyRank {
+const STORAGE_SESSION_KEY = 'vault_user_session_v2';
+const STORAGE_ADDRESSES_KEY = 'vault_user_addresses_v2';
+
+// Clean up old legacy keys that may have held mock profiles like "Master Valtor"
+if (typeof localStorage !== 'undefined') {
+  try {
+    localStorage.removeItem('vault_user_profile');
+    localStorage.removeItem('vault_user_addresses');
+    localStorage.removeItem('vault_user_orders');
+    localStorage.removeItem('vault_user_inventory');
+  } catch {
+    // ignore
+  }
+}
+
+interface StoredUserProfile {
   name: string;
-  percentage: number;
-  threshold: number;
+  email: string;
+  phone: string;
+  heraldry: 'Imperium' | 'Chaos' | 'Necrons' | 'Orks';
+}
+
+function loadStoredProfile(): StoredUserProfile | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_SESSION_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+function loadStoredAddresses(): SavedAddress[] {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_ADDRESSES_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // ignore
+  }
+  return [];
 }
 
 class UserState {
-  name = $state<string>('Master Valtor (Vane Malcor)');
-  email = $state<string>('inquisitor.malcor@imperium.vault');
-  phone = $state<string>('+7 (999) 40K-1984');
-  heraldry = $state<'Imperium' | 'Chaos' | 'Necrons' | 'Orks'>('Imperium');
+  private initialProfile = loadStoredProfile();
 
-  expendedRubles = $state<number>(34500);
-  nextRankThreshold = $state<number>(50000);
-  currentRankName = $state<string>('Veteran (7%)');
-  discountRate = $state<number>(0.07);
+  isLoggedIn = $state<boolean>(!!this.initialProfile?.email);
+  name = $state<string>(this.initialProfile?.name || '');
+  email = $state<string>(this.initialProfile?.email || '');
+  phone = $state<string>(this.initialProfile?.phone || '');
+  heraldry = $state<'Imperium' | 'Chaos' | 'Necrons' | 'Orks'>(this.initialProfile?.heraldry || 'Imperium');
 
-  activeOrderNumber = $state<string>('WH-84920');
-  activeOrderDate = $state<string>('Sep 15, 2026');
-  activeCourier = $state<string>('CDEK Express');
-  activeTrackingCipher = $state<string>('CDEK-40K-8492091');
-  activeStep = $state<number>(3); // 1, 2, 3, 4
-  activeDestination = $state<string>('Moscow, CDEK PVZ #104 (Tverskaya St, 12)');
+  addresses = $state<SavedAddress[]>(loadStoredAddresses());
 
-  addresses = $state<SavedAddress[]>([
-    {
-      id: 'addr-1',
-      type: 'PVZ',
-      city: 'Moscow',
-      line1: 'CDEK PVZ #104, Tverskaya St, 12, bld. 2',
-      details: 'Operating Hours: 10:00 - 21:00',
-      isPrimary: true
-    },
-    {
-      id: 'addr-2',
-      type: 'Courier',
-      city: 'Saint Petersburg',
-      line1: 'Courier Delivery, Nevsky Ave, 45, apt. 18',
-      details: 'Intercom: 18K • Entrance 2',
-      isPrimary: false
-    },
-    {
-      id: 'addr-3',
-      type: 'Postal',
-      city: 'Yekaterinburg',
-      line1: 'Postal Office #620000, Lenina St, 39',
-      details: 'Postal Index: 620000',
-      isPrimary: false
+  isStaff = $derived(
+    this.isLoggedIn && (
+      this.email.endsWith('@imperium.vault') ||
+      this.email.endsWith('@munitorum.admin') ||
+      this.email === 'admin@vault.local'
+    )
+  );
+
+  primaryAddress = $derived(
+    this.addresses.find(a => a.isPrimary) || this.addresses[0] || null
+  );
+
+  private persist() {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      if (this.isLoggedIn && this.email) {
+        localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify({
+          name: this.name,
+          email: this.email,
+          phone: this.phone,
+          heraldry: this.heraldry
+        }));
+      } else {
+        localStorage.removeItem(STORAGE_SESSION_KEY);
+      }
+      localStorage.setItem(STORAGE_ADDRESSES_KEY, JSON.stringify(this.addresses));
+    } catch {
+      // ignore
     }
-  ]);
+  }
+
+  login(email: string, name?: string, phone?: string) {
+    this.email = email.trim().toLowerCase();
+    this.name = name?.trim() || this.email.split('@')[0];
+    if (phone) this.phone = phone.trim();
+    this.isLoggedIn = true;
+    this.persist();
+  }
+
+  logout() {
+    this.isLoggedIn = false;
+    this.email = '';
+    this.name = '';
+    this.phone = '';
+    this.persist();
+  }
+
+  setHeraldry(h: 'Imperium' | 'Chaos' | 'Necrons' | 'Orks') {
+    this.heraldry = h;
+    this.persist();
+  }
+
+  updateProfile(name: string, phone: string) {
+    this.name = name.trim();
+    this.phone = phone.trim();
+    this.persist();
+  }
 
   setPrimaryAddress(id: string) {
     for (const a of this.addresses) {
       a.isPrimary = a.id === id;
     }
+    this.persist();
   }
 
   deleteAddress(id: string) {
     this.addresses = this.addresses.filter(a => a.id !== id);
+    this.persist();
   }
 
   addAddress(address: Omit<SavedAddress, 'id'>) {
@@ -74,10 +138,7 @@ class UserState {
       for (const a of this.addresses) a.isPrimary = false;
     }
     this.addresses.push({ ...address, id });
-  }
-
-  setHeraldry(h: 'Imperium' | 'Chaos' | 'Necrons' | 'Orks') {
-    this.heraldry = h;
+    this.persist();
   }
 }
 

@@ -8,8 +8,32 @@ export interface ToastNotification {
   type: 'gold' | 'crimson' | 'emerald';
 }
 
+function getPathForView(view: AppView): string {
+  switch (view) {
+    case 'account':
+      return '/account';
+    case 'checkout':
+      return '/checkout';
+    case 'admin':
+      return '/admin';
+    case 'catalog':
+    default:
+      return '/';
+  }
+}
+
+function getViewForPath(pathname: string): AppView {
+  const clean = pathname.toLowerCase().replace(/\/$/, '') || '/';
+  if (clean === '/account') return 'account';
+  if (clean === '/checkout') return 'checkout';
+  if (clean === '/admin') return 'admin';
+  return 'catalog';
+}
+
 class UiState {
-  activeView = $state<AppView>('catalog');
+  activeView = $state<AppView>(
+    typeof window !== 'undefined' ? getViewForPath(window.location.pathname) : 'catalog'
+  );
   cartDrawerOpen = $state<boolean>(false);
   activeModalProduct = $state<Miniature | null>(null);
   searchQuery = $state<string>('');
@@ -20,9 +44,48 @@ class UiState {
 
   private toastId = 0;
 
-  navigateTo(view: AppView) {
+  constructor() {
+    if (typeof window !== 'undefined') {
+      // Listen to browser Back / Forward navigation events
+      window.addEventListener('popstate', (e) => {
+        const view = e.state?.view || getViewForPath(window.location.pathname);
+        this.activeView = view;
+        if (this.activeModalProduct) this.closeProductModal();
+        if (this.cartDrawerOpen) this.closeCart();
+      });
+
+      // Synchronize initial history state with current URL
+      if (!window.history.state?.view) {
+        window.history.replaceState(
+          { view: this.activeView },
+          '',
+          window.location.pathname + window.location.search
+        );
+      }
+    }
+  }
+
+  navigateTo(view: AppView, options?: { replace?: boolean; skipScroll?: boolean; search?: string }) {
     this.activeView = view;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined') {
+      const targetPath = getPathForView(view);
+      const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+      const normalizedTarget = targetPath.replace(/\/$/, '') || '/';
+      const searchPart = options?.search !== undefined ? options.search : '';
+      const fullTarget = targetPath + (searchPart ? (searchPart.startsWith('?') ? searchPart : '?' + searchPart) : '');
+
+      if (currentPath !== normalizedTarget || (searchPart && window.location.search !== searchPart)) {
+        if (options?.replace) {
+          window.history.replaceState({ view }, '', fullTarget);
+        } else {
+          window.history.pushState({ view }, '', fullTarget);
+        }
+      }
+
+      if (!options?.skipScroll) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
   }
 
   openCart() {
@@ -58,14 +121,16 @@ class UiState {
   setSearch(query: string) {
     this.searchQuery = query;
     if (this.activeView !== 'catalog') {
-      this.activeView = 'catalog';
+      const qParam = query.trim() ? `?q=${encodeURIComponent(query.trim())}` : '';
+      this.navigateTo('catalog', { search: qParam });
     }
   }
 
   setUniverse(universe: string) {
     this.selectedUniverse = universe;
     if (this.activeView !== 'catalog') {
-      this.activeView = 'catalog';
+      const uParam = universe.trim() ? `?universe=${encodeURIComponent(universe.trim())}` : '';
+      this.navigateTo('catalog', { search: uParam });
     }
   }
 

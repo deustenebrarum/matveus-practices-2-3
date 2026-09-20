@@ -11,8 +11,8 @@
   let fullName = $state(user.name);
   let email = $state(user.email);
   let phone = $state(user.phone);
-  let city = $state('Moscow');
-  let address = $state('CDEK PVZ #104, Tverskaya St, 12, bld. 2');
+  let city = $state(user.primaryAddress?.city || '');
+  let address = $state(user.primaryAddress?.line1 || '');
   let courierService = $state('CDEK Express');
   let submitting = $state(false);
   let createdOrder = $state<Order | null>(null);
@@ -44,12 +44,18 @@
 
       createdOrder = order;
 
-      // Update user state active dispatch with newly sanctified order
-      user.activeOrderNumber = order.orderNumber;
-      user.activeOrderDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      user.activeCourier = order.customer.courierService;
-      user.activeDestination = `${order.customer.city}, ${order.customer.shippingAddress}`;
-      user.activeStep = 1;
+      if (!user.isLoggedIn && email) {
+        user.login(email, fullName, phone);
+      }
+      if (user.addresses.length === 0 && city && address) {
+        user.addAddress({
+          city,
+          line1: address,
+          details: courierService,
+          type: courierService.includes('PVZ') ? 'PVZ' : courierService.includes('Direct') ? 'Courier' : 'Postal',
+          isPrimary: true
+        });
+      }
 
       cart.clearCart();
       ui.notify(`Order #${order.orderNumber} successfully registered and sanctified!`, 'emerald');
@@ -64,7 +70,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
   <!-- Breadcrumb -->
   <div class="flex items-center space-x-2 text-[11px] font-cinzel tracking-widest text-[#787265] uppercase mb-6">
-    <button type="button" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={() => ui.navigateTo('catalog')}>Catalog</button>
+    <a href="/" class="hover:text-vault-gold transition-colors cursor-pointer" onclick={(e) => { e.preventDefault(); ui.navigateTo('catalog'); }}>Catalog</a>
     <span>/</span>
     <span class="text-vault-gold">Requisition Protocol Checkout</span>
   </div>

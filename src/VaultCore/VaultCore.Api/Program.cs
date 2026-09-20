@@ -23,7 +23,9 @@ var connectionString = builder.Configuration.GetConnectionString("PostgreSQL")
 builder.Services.AddMarten(opts =>
 {
     opts.Connection(connectionString);
-    opts.AutoCreateSchemaObjects = AutoCreate.All;
+    opts.AutoCreateSchemaObjects = builder.Environment.IsProduction()
+        ? AutoCreate.CreateOrUpdate
+        : AutoCreate.All;
 
     // Schema configuration
     opts.Schema.For<Miniature>()

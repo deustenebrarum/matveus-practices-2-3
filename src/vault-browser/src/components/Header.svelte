@@ -1,6 +1,7 @@
 <script lang="ts">
   import { cart } from '../lib/state/cart.svelte';
   import { ui } from '../lib/state/ui.svelte';
+  import { user } from '../lib/state/user.svelte';
 
   let mobileSearchOpen = $state(false);
 </script>
@@ -9,12 +10,10 @@
 <header class="sticky top-0 z-40 bg-[#0f1117]/95 border-b border-[#3b3221] backdrop-blur-md shadow-2xl">
   <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
     <!-- Brand Crest & Name -->
-    <div
+    <a
+      href="/"
       class="flex items-center gap-3 cursor-pointer group select-none"
-      role="button"
-      tabindex="0"
-      onclick={() => { ui.navigateTo('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-      onkeydown={(e) => { if (e.key === 'Enter') { ui.navigateTo('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
+      onclick={(e) => { e.preventDefault(); ui.navigateTo('catalog'); }}
     >
       <div class="relative w-12 h-10 flex items-center justify-center">
         <img
@@ -31,7 +30,7 @@
           The Emperor's Armoury
         </span>
       </div>
-    </div>
+    </a>
 
     <!-- Desktop Search Input Container -->
     <div class="flex-1 max-w-xl mx-4 hidden md:block">
@@ -65,34 +64,25 @@
       </button>
 
       <!-- Catalog Link -->
-      <button
-        type="button"
+      <a
+        href="/"
         class="flex items-center gap-1.5 text-xs font-cinzel font-medium transition-colors px-2 py-1 cursor-pointer {ui.activeView === 'catalog' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-300 hover:text-vault-brightGold'}"
-        onclick={() => ui.navigateTo('catalog')}
+        onclick={(e) => { e.preventDefault(); ui.navigateTo('catalog'); }}
       >
         Catalog
-      </button>
+      </a>
 
       <!-- Account Link -->
-      <button
-        type="button"
+      <a
+        href="/account"
         class="flex items-center gap-2 text-xs font-cinzel font-medium transition-colors px-2 py-1 cursor-pointer {ui.activeView === 'account' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-300 hover:text-vault-brightGold'}"
-        onclick={() => ui.navigateTo('account')}
+        onclick={(e) => { e.preventDefault(); ui.navigateTo('account'); }}
       >
         <svg class="w-4 h-4 text-vault-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
         <span class="hidden sm:inline">Account</span>
-      </button>
-
-      <!-- Admin Warehouse Link -->
-      <button
-        type="button"
-        class="hidden lg:flex items-center gap-1.5 text-xs font-cinzel font-medium transition-colors px-2 py-1 cursor-pointer {ui.activeView === 'admin' ? 'text-vault-brightGold border-b-2 border-vault-gold pb-0.5' : 'text-gray-400 hover:text-vault-brightGold'}"
-        onclick={() => ui.navigateTo('admin')}
-      >
-        <span>Armory Stock</span>
-      </button>
+      </a>
 
       <!-- Slide-out Cart Button Trigger -->
       <button

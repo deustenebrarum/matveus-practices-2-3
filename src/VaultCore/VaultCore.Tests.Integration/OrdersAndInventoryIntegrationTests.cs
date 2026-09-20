@@ -184,8 +184,8 @@ public class OrdersAndInventoryIntegrationTests
             Guid.NewGuid(),
             "ORD-TEST-OVERFLOW",
             "overflow@test.com",
-            [new OrderItemDto(miniatureId, "Roboute Guilliman", excessiveQuantity, 125m)],
-            12500m,
+            [new OrderItemDto(miniatureId, "Roboute Guilliman", excessiveQuantity, 65m)],
+            65.00m,
             DateTimeOffset.UtcNow
         );
 
